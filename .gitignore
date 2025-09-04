@@ -1,0 +1,11 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+/src/C#/.idea/.idea.ChessBot.cs/.idea/AndroidProjectSystem.xml
+/src/C#/.idea/.idea.ChessBot.cs/.idea/encodings.xml
+/src/C#/ChessBot.cs.sln.DotSettings.user
+/src/.idea/.idea.ChessBot.cs/.idea/encodings.xml
+/src/ChessBot.cs.sln.DotSettings.user
+/src/.idea/.idea.ChessBot.cs/.idea/AndroidProjectSystem.xml

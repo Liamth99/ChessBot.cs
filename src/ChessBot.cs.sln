@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessBot", "ChessBot\ChessBot.csproj", "{604F0C2E-2684-4C66-814C-BB151C57DFB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessBot.Tests", "ChessBot.Tests\ChessBot.Tests.csproj", "{20956578-8A93-49CA-9379-C3E8861850FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessBot.Core", "ChessBot.Core\ChessBot.Core.csproj", "{419807B9-BFAE-4A15-9539-263D23F5C3DF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{604F0C2E-2684-4C66-814C-BB151C57DFB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{604F0C2E-2684-4C66-814C-BB151C57DFB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{604F0C2E-2684-4C66-814C-BB151C57DFB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{604F0C2E-2684-4C66-814C-BB151C57DFB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20956578-8A93-49CA-9379-C3E8861850FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20956578-8A93-49CA-9379-C3E8861850FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20956578-8A93-49CA-9379-C3E8861850FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20956578-8A93-49CA-9379-C3E8861850FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{419807B9-BFAE-4A15-9539-263D23F5C3DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{419807B9-BFAE-4A15-9539-263D23F5C3DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{419807B9-BFAE-4A15-9539-263D23F5C3DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{419807B9-BFAE-4A15-9539-263D23F5C3DF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

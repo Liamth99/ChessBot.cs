@@ -25,12 +25,11 @@ And then maybe in the future ill make one in a functional language or use a Neur
      - [x] Pawn Promotion
      - [x] Diagonal Attacks
      - [x] En Passant
-   - [ ] Knight Jumping
    - [ ] Castling
    - [ ] Check And Checkmate
    - [ ] Illegal Moves
    - [ ] Game Draws
- - [ ] Abstract Input System (Player Input And Random Move Input As a Start) 
+ - [x] Abstract Input System (Player Input And Random Move Input As a Start) 
  - [ ] Basic MiniMax Evaluation Player Input
 
 ## Phase Two: Make It Not Suck

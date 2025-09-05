@@ -8,6 +8,6 @@ public static class ByteExtensions
     public static byte File(this byte position)
         => (byte)(position % 8);
 
-    public static int ToIntBit(this byte position)
-        => 1 << position;
+    public static long ToIntBit(this byte position)
+        => 1L << position;
 }

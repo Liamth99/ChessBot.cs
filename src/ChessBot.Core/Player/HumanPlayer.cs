@@ -1,10 +1,5 @@
 ﻿namespace ChessBot.Core.Player;
 
-public interface IPlayer
-{
-    Move GetNextMove(Board board);
-}
-
 public class HumanPlayer : IPlayer
 {
     public Move GetNextMove(Board board)

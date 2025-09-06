@@ -132,12 +132,11 @@ public class ConsoleBoard
                             
                             Console.Write("]");
                         }
-                        
-                        Console.ResetColor();
                     }
                 }
 
                 isAlt = !isAlt;
+                Console.ResetColor();
                 Console.WriteLine();
             }
 
@@ -148,6 +147,9 @@ public class ConsoleBoard
                 Console.WriteLine("    h  g  f  e  d  c  b  a  ");
             else
                 Console.WriteLine("    a  b  c  d  e  f  g  h  ");
+
+            Console.WriteLine();
+            Console.ResetColor();
         }
     }
 

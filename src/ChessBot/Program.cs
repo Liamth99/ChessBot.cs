@@ -1,10 +1,8 @@
 ﻿IPlayer whitePlayer = new HumanPlayer();
-IPlayer blackPlayer = new HumanPlayer();
+IPlayer blackPlayer = new RandomMovePlayer();
 
 var board = new Board(BoardUtils.GenerateFromFenString());
 var consoleBoard = new ConsoleBoard(board);
-
-consoleBoard.ShowValidMoves = true;
 
 while (true)
 {

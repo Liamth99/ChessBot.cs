@@ -4,12 +4,9 @@ public class HumanPlayer : IPlayer
 {
     public Move GetNextMove(Board board)
     {
-        
-        board.GenerateLegalMoves();
-
         var move = new Move();
 
-        while (!board.LegalMoves.Contains(move))
+        while (!board.LegalMoves.FriendlyMoves.Contains(move))
         {
             Console.WriteLine("Enter move in format of 'e2 e4'");
             var input = Console.ReadLine();

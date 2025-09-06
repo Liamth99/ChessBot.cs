@@ -2,10 +2,9 @@
 
 public partial class Board
 {
-    public List<Move> LegalMoves = [];
+    public readonly LegalMoveCollection LegalMoves;
     public Piece ColorToMove => _colorToMove;
     public long EnpassantBits => _enpassantBits;
-
     
     private readonly Piece[] _squares = new Piece[64];
     private Piece _colorToMove = Piece.White;
@@ -42,6 +41,7 @@ public partial class Board
 
     public Board(Piece[]? board = null, Piece colorToMove = Piece.White)
     {
+        LegalMoves = new(this);
         board ??= new Piece[64];
         
         if (board.Length is not 64)
@@ -49,6 +49,8 @@ public partial class Board
 
         _squares = board;
         _colorToMove = colorToMove & (Piece.Black | Piece.White);
+
+        GenerateLegalMoves();
     }
 
     public Piece this[int index]
@@ -63,7 +65,10 @@ public partial class Board
         _enpassantBits = 0;
         
         if(move == new Move())
+        {
+            GenerateLegalMoves();
             return;
+        }
         
         _squares[move.TargetSquare] = _squares[move.StartSquare];
         _squares[move.StartSquare] = Piece.None;
@@ -85,5 +90,7 @@ public partial class Board
                 }
             }
         }
+        
+        GenerateLegalMoves();
     }
 }

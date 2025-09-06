@@ -24,8 +24,6 @@ public class ConsoleBoard
             if (RotateBoardEachMove)
                 RotateBoard = Board.ColorToMove.IsType(Piece.Black);
             
-            Board.GenerateLegalMoves();
-            
             Console.ResetColor();
 
             bool isAlt = false;
@@ -60,7 +58,7 @@ public class ConsoleBoard
                     else if ((piece & Piece.Black) == Piece.Black)
                         Console.ForegroundColor = ConsoleColor.Black;
                     
-                    if (ShowValidMoves && Board.LegalMoves.Any(x => x.TargetSquare == i * 8 + j))
+                    if (ShowValidMoves && Board.LegalMoves.FriendlyMoves.Any(x => x.TargetSquare == i * 8 + j))
                         Console.BackgroundColor = ConsoleColor.Green;
                     
                     
@@ -103,14 +101,14 @@ public class ConsoleBoard
                         else
                             Console.ForegroundColor = ConsoleColor.DarkGray;
 
+                        Console.Write("[");
                         if (ShowValidMoves)
                         {
                             var prevColor = Console.ForegroundColor;
                             
-                            if(Board.LegalMoves.Any(x => x.TargetSquare == (byte)(i * 8 + j)))
+                            if(Board.LegalMoves.FriendlyMoves.Any(x => x.TargetSquare == (byte)(i * 8 + j)))
                                 Console.ForegroundColor = ConsoleColor.Green;
                             
-                            Console.Write("[");
                             Console.ForegroundColor = prevColor;
                         }
                         
@@ -125,13 +123,14 @@ public class ConsoleBoard
                             Console.Write(piece.ToPieceCharacter());
                         }
 
+                        Console.ResetColor();
+                        
                         if (ShowValidMoves)
                         {
-                            if(Board.LegalMoves.Any(x => x.TargetSquare == (byte)(i * 8 + j)))
+                            if(Board.LegalMoves.FriendlyMoves.Any(x => x.TargetSquare == (byte)(i * 8 + j)))
                                 Console.ForegroundColor = ConsoleColor.Green;
-                            
-                            Console.Write("]");
                         }
+                        Console.Write("]");
                     }
                 }
 

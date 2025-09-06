@@ -11,10 +11,10 @@ public partial class LegalMoveTests
         board[09] = Piece.White | Piece.Pawn;
         board[19] = Piece.White | Piece.Pawn;
         board[61] = Piece.White | Piece.Pawn;
-
+        
         board.GenerateLegalMoves();
         
-        board.LegalMoves.OrderBy(x => x.StartSquare).ThenBy(x => x.TargetSquare)
+        board.LegalMoves.FriendlyMoves.OrderBy(x => x.StartSquare).ThenBy(x => x.TargetSquare)
             .ShouldBe([new(09, 17), new(09, 25), new(19, 27)]);
     }
     
@@ -28,11 +28,9 @@ public partial class LegalMoveTests
         
         // Switch to black's turn
         board.MakeMove(new Move());
-
-        board.GenerateLegalMoves();
         
         // Should generate all 4 promotion options
-        board.LegalMoves.OrderBy(x => x.StartSquare).ThenBy(x => x.TargetSquare)
+        board.LegalMoves.FriendlyMoves.OrderBy(x => x.StartSquare).ThenBy(x => x.TargetSquare)
             .ShouldBe(
                     [
                         new(11, 03, PromotionFlag.Queen), new(11, 03, PromotionFlag.Rook), 
@@ -51,7 +49,7 @@ public partial class LegalMoveTests
         
         board.GenerateLegalMoves();
         
-        board.LegalMoves.OrderBy(x => x.StartSquare).ThenBy(x => x.TargetSquare)
+        board.LegalMoves.FriendlyMoves.OrderBy(x => x.StartSquare).ThenBy(x => x.TargetSquare)
             .ShouldBe(
                     [
                         new(51, 59, PromotionFlag.Queen), new(51, 59, PromotionFlag.Rook), 
@@ -69,11 +67,11 @@ public partial class LegalMoveTests
         board[18] = Piece.White | Piece.Pawn;
         board[25] = Piece.Black | Piece.Pawn;
         board[27] = Piece.Black | Piece.Knight;
-
+        
         board.GenerateLegalMoves();
         
         // Should be able to move forward and capture diagonally
-        board.LegalMoves.Where(m => m.StartSquare == 18)
+        board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 18)
             .OrderBy(x => x.TargetSquare)
             .ShouldBe([new(18, 25), new(18, 26), new(18, 27)]);
     }
@@ -89,10 +87,8 @@ public partial class LegalMoveTests
         board[35] = Piece.White | Piece.Rook;
         
         board.MakeMove(new Move());
-
-        board.GenerateLegalMoves();
         
-        board.LegalMoves.Where(m => m.StartSquare == 42)
+        board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 42)
             .OrderBy(x => x.TargetSquare)
             .ShouldBe([new(42, 33), new(42, 34), new(42, 35)]);
     }
@@ -105,10 +101,10 @@ public partial class LegalMoveTests
         // White pawn on 7th rank with black piece on promotion diagonal
         board[50] = Piece.White | Piece.Pawn;
         board[59] = Piece.Black | Piece.Queen;
-
+        
         board.GenerateLegalMoves();
         
-        var promotionCaptures = board.LegalMoves.Where(m => m.StartSquare == 50 && m.TargetSquare == 59)
+        var promotionCaptures = board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 50 && m.TargetSquare == 59)
             .OrderBy(x => x.Promotion);
         
         promotionCaptures.ShouldBe([
@@ -129,10 +125,8 @@ public partial class LegalMoveTests
         board[01] = Piece.White | Piece.Rook;
         
         board.MakeMove(new Move());
-
-        board.GenerateLegalMoves();
         
-        var promotionCaptures = board.LegalMoves.Where(m => m.StartSquare == 10 && m.TargetSquare == 01)
+        var promotionCaptures = board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 10 && m.TargetSquare == 01)
             .OrderBy(x => x.Promotion);
         
         promotionCaptures.ShouldBe([
@@ -151,10 +145,10 @@ public partial class LegalMoveTests
         board[18] = Piece.White | Piece.Pawn;
         board[27] = Piece.Black | Piece.Knight;
         board[25] = Piece.White | Piece.Bishop; // Blocks capture
-
+        
         board.GenerateLegalMoves();
         
-        board.LegalMoves.Where(m => m.StartSquare == 18)
+        board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 18)
             .OrderBy(x => x.TargetSquare)
             .ShouldBe([new(18, 26), new(18, 27)]);
     }
@@ -166,10 +160,10 @@ public partial class LegalMoveTests
 
         board[49] = Piece.White | Piece.Pawn;
         board[56] = Piece.Black | Piece.Queen;
-
+        
         board.GenerateLegalMoves();
         
-        var promotionCaptures = board.LegalMoves.Where(m => m.StartSquare == 49 && m.TargetSquare == 56)
+        var promotionCaptures = board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 49 && m.TargetSquare == 56)
             .OrderBy(x => x.Promotion);
         
         promotionCaptures.ShouldBe([
@@ -189,10 +183,8 @@ public partial class LegalMoveTests
         board[00] = Piece.White | Piece.Rook;
         
         board.MakeMove(new Move());
-
-        board.GenerateLegalMoves();
         
-        var promotionCaptures = board.LegalMoves.Where(m => m.StartSquare == 09 && m.TargetSquare == 00)
+        var promotionCaptures = board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 09 && m.TargetSquare == 00)
             .OrderBy(x => x.Promotion);
         
         promotionCaptures.ShouldBe([
@@ -218,10 +210,7 @@ public partial class LegalMoveTests
         // Black pawn moves f7 to f5 (two squares), creating en passant opportunity
         board.MakeMove(new Move(53, 37)); // f7 to f5
         
-        board.GenerateLegalMoves();
-        
-        // White should be able to capture en passant on f6 (square 45)
-        board.LegalMoves.Where(m => m.StartSquare == 36)
+        board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 36)
             .OrderBy(x => x.TargetSquare)
             .ShouldBe([new(36, 44), new(36, 45)]);
     }
@@ -241,10 +230,7 @@ public partial class LegalMoveTests
         // Black pawn moves d7 to d5 (two squares), creating en passant opportunity
         board.MakeMove(new Move(51, 35)); // d7 to d5
         
-        board.GenerateLegalMoves();
-        
-        // White should be able to capture en passant on d6 (square 43)
-        board.LegalMoves.Where(m => m.StartSquare == 36)
+        board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 36)
             .OrderBy(x => x.TargetSquare)
             .ShouldBe([new(36, 43), new(36, 44)]);
     }
@@ -261,10 +247,7 @@ public partial class LegalMoveTests
         // White pawn moves f2 to f4 (two squares), creating en passant opportunity
         board.MakeMove(new Move(13, 29)); // f2 to f4
         
-        board.GenerateLegalMoves();
-        
-        // Black should be able to capture en passant on f3 (square 21)
-        board.LegalMoves.Where(m => m.StartSquare == 28)
+        board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 28)
             .OrderBy(x => x.TargetSquare)
             .ShouldBe([new(28, 20), new(28, 21)]);
     }
@@ -281,10 +264,7 @@ public partial class LegalMoveTests
         // White pawn moves d2 to d4 (two squares), creating en passant opportunity
         board.MakeMove(new Move(11, 27)); // d2 to d4
         
-        board.GenerateLegalMoves();
-        
-        // Black should be able to capture en passant on d3 (square 19)
-        board.LegalMoves.Where(m => m.StartSquare == 28)
+        board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 28)
             .OrderBy(x => x.TargetSquare)
             .ShouldBe([new(28, 19), new(28, 20)]);
     }
@@ -311,8 +291,6 @@ public partial class LegalMoveTests
         // Black makes any move
         board.MakeMove(new Move(60, 61)); // King move
         
-        board.GenerateLegalMoves();
-        
         // En passant should no longer be available
         board.EnpassantBits.ShouldBe(0);
     }
@@ -332,10 +310,7 @@ public partial class LegalMoveTests
         // Black pawn moves b7 to b5
         board.MakeMove(new Move(49, 33)); // b7 to b5
         
-        board.GenerateLegalMoves();
-        
-        // White a5 pawn should be able to capture en passant on b6 and move forward
-        board.LegalMoves.Where(m => m.StartSquare == 32)
+        board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 32)
             .OrderBy(x => x.TargetSquare)
             .ShouldBe([new(32, 40), new(32, 41)]);
     }
@@ -355,10 +330,7 @@ public partial class LegalMoveTests
         // Black pawn moves g7 to g5
         board.MakeMove(new Move(54, 38)); // g7 to g5
         
-        board.GenerateLegalMoves();
-        
-        // White h5 pawn should be able to capture en passant on g6 and move forward
-        board.LegalMoves.Where(m => m.StartSquare == 39)
+        board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 39)
             .OrderBy(x => x.TargetSquare)
             .ShouldBe([new(39, 46), new(39, 47)]);
     }

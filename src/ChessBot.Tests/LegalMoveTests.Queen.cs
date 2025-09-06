@@ -11,7 +11,7 @@ public partial class LegalMoveTests
 
         board.GenerateLegalMoves();
         
-        board.LegalMoves.OrderBy(x => x.TargetSquare).ShouldBe(
+        board.LegalMoves.FriendlyMoves.OrderBy(x => x.TargetSquare).ShouldBe(
         [
             new(27, 00), new(27, 03), new(27, 06), new(27, 09), new(27, 11), new(27, 13), new(27, 18), new(27, 19), new(27, 20), 
             new(27, 24), new(27, 25), new(27, 26), new(27, 28), new(27, 29), new(27, 30), new(27, 31), new(27, 34), new(27, 35), 
@@ -38,7 +38,7 @@ public partial class LegalMoveTests
 
         board.GenerateLegalMoves();
         
-        board.LegalMoves.OrderBy(x => x.TargetSquare).ShouldBe(
+        board.LegalMoves.FriendlyMoves.OrderBy(x => x.TargetSquare).ShouldBe(
         [
             new(27, 09), new(27, 11), new(27, 13), new(27, 18), new(27, 19), new(27, 20), new(27, 25), new(27, 26), 
             new(27, 28), new(27, 29), new(27, 34), new(27, 35), new(27, 36), new(27, 41), new(27, 43), new(27, 45)

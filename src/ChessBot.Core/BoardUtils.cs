@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using ChessBot.Core.Enums;
 
 namespace ChessBot.Core;
 
@@ -123,9 +122,9 @@ public static partial class BoardUtils
         if (index > 63)
             throw new ArgumentOutOfRangeException(nameof(index), "Index must be between 0 and 63 inclusive.");
 
-        int rank = index / 8;
+        int rank = index % 8;
 
-        int file = index % 8;
+        int file = index / 8;
 
         char rankChar = (char)('a' + rank);
         

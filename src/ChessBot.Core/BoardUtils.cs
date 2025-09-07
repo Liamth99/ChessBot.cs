@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Numerics;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace ChessBot.Core;
 
@@ -70,6 +72,97 @@ public static partial class BoardUtils
             FullMoveCount = int.Parse(fenParts[5])
         };
     }
+    
+    public static string GenerateFenString(Board board)
+    {
+        if (board is null) 
+            throw new ArgumentNullException(nameof(board));
+
+        var parts = new List<string>(6);
+        var rows = new List<string>(8);
+        
+        for (int rank = 7; rank >= 0; rank--)
+        {
+            int emptyCount = 0;
+            StringBuilder row = new(8);
+
+            for (int file = 0; file < 8; file++)
+            {
+                int index = rank * 8 + file;
+                var piece = board[index];
+
+                if (piece == Piece.None)
+                {
+                    emptyCount++;
+                }
+                else
+                {
+                    if (emptyCount > 0)
+                    {
+                        row.Append(emptyCount);
+                        emptyCount = 0;
+                    }
+
+                    char symbol = GetPieceChar(piece);
+                    row.Append(symbol);
+                }
+            }
+
+            if (emptyCount > 0)
+                row.Append(emptyCount);
+
+            rows.Add(row.ToString());
+        }
+        
+        parts.Add(string.Join('/', rows));
+
+        parts.Add(board.ColorToMove.IsType(Piece.White) ? "w" : "b");
+
+        StringBuilder castle = new(4);
+        
+        if ((board.ValidCastleBits & Board.WhiteKingCastle)  > 0) 
+            castle.Append('K');
+        if ((board.ValidCastleBits & Board.WhiteQueenCastle) > 0) 
+            castle.Append('Q');
+        if ((board.ValidCastleBits & Board.BlackKingCastle)  > 0) 
+            castle.Append('k');
+        if ((board.ValidCastleBits & Board.BlackQueenCastle) > 0) 
+            castle.Append('q');
+        
+        parts.Add(castle.Length == 0 ? "-" : castle.ToString());
+
+        if (board.EnPassantBits == 0)
+        {
+            parts.Add("-");
+        }
+        else
+        {
+            int epIndex = BitOperations.TrailingZeroCount(board.EnPassantBits);
+            parts.Add(GetPositionByIndex((byte)epIndex));
+        }
+
+        parts.Add(board.HalfMoveClock.ToString());
+        parts.Add(board.FullMoveCount.ToString());
+
+        return string.Join(' ', parts);
+
+        static char GetPieceChar(Piece piece)
+        {
+            char c = piece switch
+            {
+                _ when piece.IsType(Piece.King)   => 'k',
+                _ when piece.IsType(Piece.Queen)  => 'q',
+                _ when piece.IsType(Piece.Rook)   => 'r',
+                _ when piece.IsType(Piece.Bishop) => 'b',
+                _ when piece.IsType(Piece.Knight) => 'n',
+                _ when piece.IsType(Piece.Pawn)   => 'p',
+                _                                  => ' ',
+            };
+
+            return piece.IsType(Piece.White) ? char.ToUpperInvariant(c) : c;
+        }
+    }
+
     
     public static byte GetIndexByPosition(string position)
     {

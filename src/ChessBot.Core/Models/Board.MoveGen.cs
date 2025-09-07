@@ -7,8 +7,8 @@ public partial class Board
     private static readonly ImmutableArray<short> SlidingDirectionOffsets = [8, -8, -1, 1, 7, -7, 9, -9];
     private static readonly short[][] NumSquaresToEdge = new short[64][];
 
-    public const ulong WhiteKingCastle  = 0b11110000UL;
-    public const ulong WhiteQueenCastle = 0b111UL;
+    public const ulong WhiteKingCastle  = 0b11100000UL;
+    public const ulong WhiteQueenCastle = 0b1111UL;
     public const ulong BlackKingCastle  = 0b11100000UL << 56;
     public const ulong BlackQueenCastle = 0b1111L << 56;
 

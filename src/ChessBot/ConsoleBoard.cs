@@ -14,6 +14,7 @@ public class ConsoleBoard
     public bool RotateBoard { get; set; } = false;
     public bool RotateBoardEachMove { get; set; } = false;
     public bool ShowEnpassantSquares { get; set; } = false;
+    public bool ShowCastleSquares { get; set; } = false;
 
     private static readonly Lock _lock = new Lock();
     
@@ -47,7 +48,11 @@ public class ConsoleBoard
 
                 for (int j = startCol; j != endCol + colStep; j += colStep)
                 {
-                    Console.BackgroundColor = GetSquareColor(isAlt);
+                    if(ShowCastleSquares && ((Board.ValidCastleBits & (1UL << (i * 8 + j))) > 0))
+                        Console.BackgroundColor = ConsoleColor.DarkYellow;
+                    else
+                        Console.BackgroundColor = GetSquareColor(isAlt);
+                    
                     Console.Write(" ");
 
                     var piece = Board[i * 8 + j];
@@ -71,8 +76,14 @@ public class ConsoleBoard
                         Console.Write(piece.ToPieceCharacter());
 
                     Console.ResetColor();
-                    Console.BackgroundColor = GetSquareColor(isAlt);
+                    
+                    if(ShowCastleSquares && ((Board.ValidCastleBits & (1UL << (i * 8 + j))) > 0))
+                        Console.BackgroundColor = ConsoleColor.DarkYellow;
+                    else
+                        Console.BackgroundColor = GetSquareColor(isAlt);
+                    
                     Console.Write(" ");
+                    
                     isAlt = !isAlt;
                 }
 
@@ -90,7 +101,12 @@ public class ConsoleBoard
 
                     for (int j = startIdxCol; j != endIdxCol + idxColStep; j += idxColStep)
                     {
+                        Console.ResetColor();
+                        
                         var piece = Board[i * 8 + j];
+                        
+                        if(ShowCastleSquares && ((Board.ValidCastleBits & (1UL << (i * 8 + j))) > 0))
+                            Console.BackgroundColor = ConsoleColor.DarkYellow;
 
                         if ((piece & Piece.White) == Piece.White)
                             Console.ForegroundColor = ConsoleColor.White;
@@ -127,8 +143,6 @@ public class ConsoleBoard
                         {
                             Console.Write(piece.ToPieceCharacter());
                         }
-
-                        Console.ResetColor();
                         
                         if ((piece & Piece.White) == Piece.White)
                             Console.ForegroundColor = ConsoleColor.White;

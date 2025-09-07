@@ -6,6 +6,7 @@ var consoleBoard = new ConsoleBoard(board);
 
 consoleBoard.ShowSquareIndexes = true;
 consoleBoard.ShowValidMoves = true;
+consoleBoard.ShowCastleSquares = true;
 
 consoleBoard.WriteToConsole();
 

@@ -8,10 +8,15 @@ public class HumanPlayer : IPlayer
 
         while (!board.LegalMoves.FriendlyMoves.Contains(move))
         {
-            Console.WriteLine("Enter move in format of 'e2 e4'");
             var input = Console.ReadLine();
 
             ArgumentException.ThrowIfNullOrWhiteSpace(input);
+
+            if (input.Equals("fen", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine(BoardUtils.GenerateFenString(board));
+                continue;
+            }
 
             var positions = input.Split('\u0020');
 

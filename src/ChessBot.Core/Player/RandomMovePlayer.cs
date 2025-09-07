@@ -6,6 +6,6 @@ public class RandomMovePlayer : IPlayer
     
     public Move GetNextMove(Board board)
     {
-        return board.LegalMoves.FriendlyMoves[_random.Next(0, board.LegalMoves.FriendlyMoves.Count - 1)];
+        return board.LegalMoves.FriendlyMoves.ElementAt(_random.Next(0, board.LegalMoves.FriendlyMoves.Count() - 1));
     }
 }

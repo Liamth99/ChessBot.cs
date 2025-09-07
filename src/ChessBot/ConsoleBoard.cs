@@ -62,7 +62,7 @@ public class ConsoleBoard
                         Console.BackgroundColor = ConsoleColor.Green;
                     
                     
-                    if(ShowEnpassantSquares && (Board.EnPassantBits & (0b1L << (i * 8 + j))) > 1)
+                    if(ShowEnpassantSquares && (Board.EnPassantBits & (0b1UL << (i * 8 + j))) > 1)
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.Write("é");
@@ -113,7 +113,7 @@ public class ConsoleBoard
                         }
                         
                         Console.Write($"{i * 8 + j:00}:");
-                        if(ShowEnpassantSquares && (Board.EnPassantBits & (0b1L << (i * 8 + j))) > 1)
+                        if(ShowEnpassantSquares && (Board.EnPassantBits & (0b1UL << (i * 8 + j))) > 1)
                         {
                             Console.ForegroundColor = ConsoleColor.Yellow;
                             Console.Write("é");
@@ -147,8 +147,18 @@ public class ConsoleBoard
             else
                 Console.WriteLine("    a  b  c  d  e  f  g  h  ");
 
-            Console.WriteLine();
             Console.ResetColor();
+            Console.Write("Move: ");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write($"{Board.FullMoveCount} ");
+            Console.ResetColor();
+            Console.Write(" Half Move Clock: ");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write($"{Board.HalfMoveClock}");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write($" {(Board.IsCheck ? "- Check" : string.Empty)}{(Board.IsMate ? "mate" : string.Empty)}");
+            Console.ResetColor();
+            Console.WriteLine();
         }
     }
 

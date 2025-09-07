@@ -26,9 +26,13 @@ And then maybe in the future ill make one in a functional language or use a Neur
      - [x] Diagonal Attacks
      - [x] En Passant
    - [ ] Castling
-   - [ ] Check And Checkmate
-   - [ ] Illegal Moves
+   - [x] Check And Checkmate
+   - [x] Illegal Moves
    - [ ] Game Draws
+     - [x] Stalemate
+     - [ ] Threefold Repetition
+     - [x] Fifty-Move Rule
+     - [ ] Insufficient Material
  - [x] Abstract Input System (Player Input And Random Move Input As a Start) 
  - [ ] Basic MiniMax Evaluation Player Input
 

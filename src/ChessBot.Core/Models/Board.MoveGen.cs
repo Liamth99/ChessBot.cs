@@ -7,9 +7,11 @@ public partial class Board
     private static readonly ImmutableArray<short> SlidingDirectionOffsets = [8, -8, -1, 1, 7, -7, 9, -9];
     private static readonly short[][] NumSquaresToEdge = new short[64][];
 
-    public void GenerateLegalMoves()
+    public void GenerateLegalMoves(bool skipCheckAndLegalMoves = false)
     {
         LegalMoves.Clear();
+
+        short freindlyKingPosIndex = 0;
 
         for (byte startSquare = 0; startSquare < 64; startSquare++)
         {
@@ -24,12 +26,62 @@ public partial class Board
                     AddKnightLegalMoves(startSquare, piece);
 
                 if (piece.IsType(Piece.King))
+                {
                     AddKingLegalMoves(startSquare, piece);
+                    
+                    if (piece.IsType(ColorToMove))
+                        freindlyKingPosIndex = startSquare;
+                }
 
                 if (piece.IsType(Piece.Pawn))
                     AddPawnLegalMoves(startSquare, piece);
             }
         }
+        
+        if(skipCheckAndLegalMoves)
+            return;
+
+        if (ColorToMove is Piece.White)
+            IsCheck = ((1UL << freindlyKingPosIndex) & LegalMoves.BlackAttackBits) > 0;
+        else
+            IsCheck = ((1UL << freindlyKingPosIndex) & LegalMoves.WhiteAttackBits) > 0;
+
+        List<Move> actuallyValidMoves = new(256);
+        Move[] enemyMoves = LegalMoves.EnemyMoves.ToArray();
+        
+        foreach (var move in LegalMoves.FriendlyMoves)
+        {
+            var futureBoard = Clone();
+            
+            futureBoard.MakeMove(move, true);
+
+            bool nextTurnCheck;
+            short nextKingPos = freindlyKingPosIndex == move.StartSquare ? move.TargetSquare : freindlyKingPosIndex;
+            
+            if (ColorToMove is Piece.White)
+                nextTurnCheck = ((1UL << nextKingPos) & futureBoard.LegalMoves.BlackAttackBits) > 0;
+            else
+                nextTurnCheck = ((1UL << nextKingPos) & futureBoard.LegalMoves.WhiteAttackBits) > 0;
+            
+            if(!nextTurnCheck)
+                actuallyValidMoves.Add(move);
+        }
+        
+        LegalMoves.Clear();
+        LegalMoves.AddRange(enemyMoves.Concat(actuallyValidMoves));
+
+        if (!LegalMoves.FriendlyMoves.Any())
+        {
+            if (IsCheck)
+                IsMate = true;
+            else
+                IsDraw = true;
+
+            return;
+        }
+
+        if (HalfMoveClock >= 50)
+            IsDraw = true;
     }
 
     private void AddSlidingLegalMoves(byte startSquare, Piece piece)
@@ -59,12 +111,10 @@ public partial class Board
     {
         if (startSquare.File() < 7)
         {
-            if (startSquare.Rank() < 6 &&
-                !_squares[startSquare + 17]
-                    .IsType(piece.ToColor())) // something along the lines of (this doesnt work) -> && ((_squares[startSquare + 8] | _squares[startSquare + 16]) & (piece & (Piece.Black | Piece.White)).ToggleColor()) == 0
+            if (startSquare.Rank() < 6 && !_squares[startSquare + 17].IsType(piece.ToColor()))
                 LegalMoves.Add(new Move(startSquare, (byte)(startSquare + 17)));
 
-            if (startSquare.Rank() > 0 && !_squares[startSquare - 15].IsType(piece.ToColor()))
+            if (startSquare.Rank() > 1 && !_squares[startSquare - 15].IsType(piece.ToColor()))
                 LegalMoves.Add(new Move(startSquare, (byte)(startSquare - 15)));
         }
 
@@ -73,7 +123,7 @@ public partial class Board
             if (startSquare.Rank() < 7 && !_squares[startSquare + 10].IsType(piece.ToColor()))
                 LegalMoves.Add(new Move(startSquare, (byte)(startSquare + 10)));
 
-            if (startSquare.Rank() > 1 && !_squares[startSquare - 6].IsType(piece.ToColor()))
+            if (startSquare.Rank() > 0 && !_squares[startSquare - 6].IsType(piece.ToColor()))
                 LegalMoves.Add(new Move(startSquare, (byte)(startSquare - 6)));
         }
 
@@ -91,7 +141,7 @@ public partial class Board
             if (startSquare.Rank() < 6 && !_squares[startSquare + 15].IsType(piece.ToColor()))
                 LegalMoves.Add(new Move(startSquare, (byte)(startSquare + 15)));
 
-            if (startSquare.Rank() > 0 && !_squares[startSquare - 17].IsType(piece.ToColor()))
+            if (startSquare.Rank() > 1 && !_squares[startSquare - 17].IsType(piece.ToColor()))
                 LegalMoves.Add(new Move(startSquare, (byte)(startSquare - 17)));
         }
     }
@@ -171,7 +221,7 @@ public partial class Board
             {
                 var pieceOnLeftAttack = _squares[leftAttackSquare];
                 if (pieceOnLeftAttack != Piece.None && pieceOnLeftAttack.ToColor() != piece.ToColor() ||
-                    (EnPassantBits & (0b1L << leftAttackSquare)) > 0)
+                    (EnPassantBits & (0b1UL << leftAttackSquare)) > 0)
                 {
                     byte leftAttackByte = (byte)leftAttackSquare;
 
@@ -199,7 +249,7 @@ public partial class Board
             {
                 var pieceOnRightAttack = _squares[rightAttackSquare];
                 if (pieceOnRightAttack != Piece.None && pieceOnRightAttack.ToColor() != piece.ToColor() ||
-                    (EnPassantBits & (0b1L << rightAttackSquare)) > 0)
+                    (EnPassantBits & (0b1UL << rightAttackSquare)) > 0)
                 {
                     byte rightAttackByte = (byte)rightAttackSquare;
 

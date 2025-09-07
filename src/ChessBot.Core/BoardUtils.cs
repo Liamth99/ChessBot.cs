@@ -49,23 +49,23 @@ public static partial class BoardUtils
             }
         }
 
-        long castleBits = 0;
+        ulong castleBits = 0;
 
         if (fenParts[2].Contains('K'))
             castleBits |= 0b11110000;
         if (fenParts[2].Contains('Q'))
             castleBits |= 0b11111;
         if (fenParts[2].Contains('k'))
-            castleBits |= (long)0b11111 << 56;
+            castleBits |= (ulong)0b11111 << 56;
         if (fenParts[2].Contains('q'))
-            castleBits |= (long)0b11110000 << 56;
+            castleBits |= (ulong)0b11110000 << 56;
 
         return new BoardInitSettings()
         {
             Squares = squares,
             ColorToMove = fenParts[1] == "w" ? Piece.White : Piece.Black,
             ValidCastleBits = castleBits,
-            EnPassantBits = fenParts[3] == "-" ? 0L : 1L << GetIndexByPosition(fenParts[3]),
+            EnPassantBits = fenParts[3] == "-" ? 0UL : 1UL << GetIndexByPosition(fenParts[3]),
             HalfMoveClock = int.Parse(fenParts[4]),
             FullMoveCount = int.Parse(fenParts[5])
         };

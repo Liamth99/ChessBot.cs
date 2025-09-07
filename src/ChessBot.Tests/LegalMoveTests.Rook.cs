@@ -30,7 +30,7 @@ public partial class LegalMoveTests
         board[20] = Piece.Black | Piece.Rook;
         board[34] = Piece.Black | Piece.Rook;
 
-        board.GenerateLegalMoves();
+        board.GenerateLegalMoves(true);
         
         board.LegalMoves.FriendlyMoves.OrderBy(x => x.TargetSquare).ShouldBe(
         [

@@ -5,13 +5,15 @@ public partial class Board
     public readonly LegalMoveCollection LegalMoves;
     
     public Piece ColorToMove { get; private set; }
-    public long EnPassantBits { get; private set; }
-    public long ValidCastleBits { get; private set; }
+    public ulong EnPassantBits { get; private set; }
+    public ulong ValidCastleBits { get; private set; }
     public int FullMoveCount { get; private set; }
     public int HalfMoveClock { get; private set; }
+    public bool IsCheck { get; private set; }
+    public bool IsMate { get; private set; }
+    public bool IsDraw { get; private set; }
 
     private readonly Piece[] _squares;
-
 
     static Board()
     {
@@ -41,7 +43,7 @@ public partial class Board
         }
     }
 
-    public Board(BoardInitSettings? settings = null)
+    public Board(BoardInitSettings? settings = null, bool skipCheckAndLegalMoves = false)
     {
         settings ??= BoardInitSettings.Empty;
         
@@ -54,7 +56,25 @@ public partial class Board
         
         LegalMoves = new(this);
 
-        GenerateLegalMoves();
+        GenerateLegalMoves(skipCheckAndLegalMoves);
+    }
+
+    public Board Clone()
+    {
+        Piece[] newBoardPieces = new Piece[64];
+        
+        _squares.CopyTo(newBoardPieces, 0);
+        
+        return new Board(
+            new()
+            {
+                Squares         = newBoardPieces,
+                ColorToMove     = this.ColorToMove,
+                EnPassantBits   = this.EnPassantBits,
+                FullMoveCount   = this.FullMoveCount,
+                HalfMoveClock   = this.HalfMoveClock,
+                ValidCastleBits = this.ValidCastleBits
+            }, true);
     }
 
     public Piece this[int index]
@@ -63,14 +83,14 @@ public partial class Board
         set => _squares[index] = value;
     }
 
-    public void MakeMove(Move move)
+    public void MakeMove(Move move, bool skipCheckAndLegalMoves = false)
     {
         ColorToMove = ColorToMove.ToggleColor();
         EnPassantBits = 0;
         
         if(move == new Move())
         {
-            GenerateLegalMoves();
+            GenerateLegalMoves(skipCheckAndLegalMoves);
             return;
         }
 
@@ -99,11 +119,11 @@ public partial class Board
                 int movediff = move.TargetSquare - move.StartSquare;
                 if (movediff is -16 or 16)
                 {
-                    EnPassantBits = 0b1L << (move.TargetSquare - (movediff >> 1));
+                    EnPassantBits = 0b1UL << (move.TargetSquare - (movediff >> 1));
                 }
             }
         }
         
-        GenerateLegalMoves();
+        GenerateLegalMoves(skipCheckAndLegalMoves);
     }
 }

@@ -74,8 +74,8 @@ public class BoardTests
         boardState.Squares[62].ShouldBe(Piece.Black | Piece.Knight);
         boardState.Squares[63].ShouldBe(Piece.Black | Piece.Rook);
         
-        boardState.EnPassantBits.ShouldBe(0);
-        boardState.ValidCastleBits.ShouldBe((0b11111111L << 56) | 0b11111111);
+        boardState.EnPassantBits.ShouldBe(0u);
+        boardState.ValidCastleBits.ShouldBe((0b11111111uL << 56) | 0b11111111);
         
         boardState.ColorToMove.ShouldBe(Piece.White);
         boardState.HalfMoveClock.ShouldBe(0);
@@ -98,7 +98,7 @@ public class BoardTests
 
         // En passant target
         var epIndex = BoardUtils.GetIndexByPosition("e3");
-        state.EnPassantBits.ShouldBe(1L << epIndex);
+        state.EnPassantBits.ShouldBe(1uL << epIndex);
 
         // Clocks
         state.HalfMoveClock.ShouldBe(0);
@@ -106,13 +106,13 @@ public class BoardTests
     }
     
     [Theory]
-    [InlineData("K",       (long)0b11110000)]
-    [InlineData("Q",       (long)0b11111)]
-    [InlineData("k",       (long)0b11111 << 56)]
-    [InlineData("q",       (long)0b11110000 << 56)]
-    [InlineData("KQkq",    (0b11111111L << 56) | 0b11111111)]
+    [InlineData("K",       (ulong)0b11110000)]
+    [InlineData("Q",       (ulong)0b11111)]
+    [InlineData("k",       (ulong)0b11111 << 56)]
+    [InlineData("q",       (ulong)0b11110000UL << 56)]
+    [InlineData("KQkq",    (0b11111111UL << 56) | 0b11111111)]
     [InlineData("-",       0L)]
-    public void Fen_CastlingRights_SetCastleBits(string castling, long expectedBits)
+    public void Fen_CastlingRights_SetCastleBits(string castling, ulong expectedBits)
     {
         var fen = $"8/8/8/8/8/8/8/8 w {castling} - 0 1";
         var state = BoardUtils.GenerateFromFenString(fen);
@@ -125,4 +125,220 @@ public class BoardTests
         var invalidFen = "8/8/8/8/8/8/8/8 w - - 0"; // only 5 parts
         Should.Throw<ArgumentException>(() => BoardUtils.GenerateFromFenString(invalidFen));
     }
+    
+    [Fact]
+    public void Checkmate_FoolsMate_IsDetected()
+    {
+        // Position after: 1. f3 e5 2. g4 Qh4#
+        var fen = "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3";
+        var settings = BoardUtils.GenerateFromFenString(fen);
+        var board = new Board(settings);
+
+        board.IsCheck.ShouldBeTrue();
+        board.IsMate.ShouldBeTrue();
+        board.IsDraw.ShouldBeFalse();
+    }
+    
+    [Fact]
+    public void Check_ButNotMate_IsDetected()
+    {
+        // Black king on e8 in check from white queen on e4; black has escapes.
+        var fen = "4k3/8/8/8/4Q3/8/8/4K3 b - - 0 1";
+        var settings = BoardUtils.GenerateFromFenString(fen);
+        var board = new Board(settings);
+
+        board.IsCheck.ShouldBeTrue();
+        board.IsMate.ShouldBeFalse();
+        board.IsDraw.ShouldBeFalse();
+    }
+    
+    [Fact]
+    public void NoCheck_NoMate_InStartPosition()
+    {
+        var fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        var settings = BoardUtils.GenerateFromFenString(fen);
+        var board = new Board(settings);
+
+        board.IsCheck.ShouldBeFalse();
+        board.IsMate.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Checkmate_QueenAndKing_VsLoneKing_IsDetected()
+    {
+        // Simple boxed mate: Black king a8; White queen b7, White king c7. Black to move and checkmated.
+        var fen = "k7/1QK5/8/8/8/8/8/8 b - - 0 1";
+        var settings = BoardUtils.GenerateFromFenString(fen);
+        var board = new Board(settings);
+
+        board.IsCheck.ShouldBeTrue();
+        board.IsMate.ShouldBeTrue();
+        board.IsDraw.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Check_DoubleCheck_NotMate_WhenKingHasEscape()
+    {
+        // Double check on black king e8 from Re1 and Bb5; f8 is a legal escape, so not mate.
+        var fen = "4k3/8/8/1B6/8/8/8/4R3 b - - 0 1";
+        var settings = BoardUtils.GenerateFromFenString(fen);
+        var board = new Board(settings);
+
+        board.IsCheck.ShouldBeTrue();
+        board.IsMate.ShouldBeFalse();
+        board.IsDraw.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Checkmate_SmotheredMate_KnightF7_IsDetected()
+    {
+        // Classic smothered mate pattern: Black king h8 trapped by own pieces; White knight on f7 gives mate.
+        // Pieces: Black king h8, rook g8, pawns g7,h7; White knight f7, White king a1 (far away).
+        var fen = "6rk/5Npp/8/8/8/8/8/K7 b - - 0 1";
+        var settings = BoardUtils.GenerateFromFenString(fen);
+        var board = new Board(settings);
+
+        board.IsCheck.ShouldBeTrue();
+        board.IsMate.ShouldBeTrue();
+        board.IsDraw.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Check_RookAlignedButBlocked_NoCheck()
+    {
+        // Black king e8, White rook e1 but a White pawn on e7 blocks the check; should not be check.
+        var fen = "4k3/4P3/8/8/8/8/8/4R3 b - - 0 1";
+        var settings = BoardUtils.GenerateFromFenString(fen);
+        var board = new Board(settings);
+
+        board.IsCheck.ShouldBeFalse();
+        board.IsMate.ShouldBeFalse();
+        board.IsDraw.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Check_BishopLongDiagonal_WithEscape_NotMate()
+    {
+        // White bishop a4 checking black king e8 along diagonal; Black can move Kd8, so not mate.
+        var fen = "4k3/8/8/8/B7/8/8/4K3 b - - 0 1";
+        var settings = BoardUtils.GenerateFromFenString(fen);
+        var board = new Board(settings);
+
+        board.IsCheck.ShouldBeTrue();
+        board.IsMate.ShouldBeFalse();
+        board.IsDraw.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Checkmate_BackRank_WithRook_IsDetected()
+    {
+        // Back-rank mate against black.
+        var fen = "4R1k1/6pp/8/8/8/8/8/5R2 b - - 0 1";
+        var settings = BoardUtils.GenerateFromFenString(fen);
+        var board = new Board(settings);
+
+        board.IsCheck.ShouldBeTrue();
+        board.IsMate.ShouldBeTrue();
+        board.IsDraw.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Stalemate_Classic_KingCorner_BoxedByKingAndQueen()
+    {
+        // Black to move, not in check, but has no legal moves.
+        var fen = "7k/8/5KQ1/8/8/8/8/8 b - - 0 1";
+        var settings = BoardUtils.GenerateFromFenString(fen);
+        var board = new Board(settings);
+
+        board.IsCheck.ShouldBeFalse();
+        board.IsMate.ShouldBeFalse();
+        board.IsDraw.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Stalemate_KingBlocked_ByKingAndPawn()
+    {
+        // Another stalemate motif:
+        var fen = "1k6/1P6/1K6/8/8/8/8/8 b - - 0 1";
+        var settings = BoardUtils.GenerateFromFenString(fen);
+        var board = new Board(settings);
+
+        board.IsCheck.ShouldBeFalse();
+        board.IsMate.ShouldBeFalse();
+        board.IsDraw.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Pinned_Rook_OnFile_CannotMoveSideways()
+    {
+        // Setup:
+        // White king e1 (4), white rook e2 (12), black rook e8 (60).
+        // Rook on e2 is pinned along the e-file; sideways moves must be illegal.
+        var board = new Board();
+        board[4]  = Piece.White | Piece.King;  // e1
+        board[12] = Piece.White | Piece.Rook;  // e2
+        board[60] = Piece.Black | Piece.Rook;  // e8
+
+        board.GenerateLegalMoves();
+
+        // Illegal: e2 -> d2 (sideways while pinned)
+        var illegalSideways = new Move(12, 11);
+        board.LegalMoves.FriendlyMoves.ShouldNotContain(illegalSideways);
+
+        // Legal: e2 -> e3 (still blocking the e-file)
+        var legalAlongFile = new Move(12, 20);
+        board.LegalMoves.FriendlyMoves.ShouldContain(legalAlongFile);
+
+        // Legal: e2 -> e8 (capturing the attacker)
+        var legalCaptureAttacker = new Move(12, 60);
+        board.LegalMoves.FriendlyMoves.ShouldContain(legalCaptureAttacker);
+    }
+
+    [Fact]
+    public void Pinned_Knight_OnFile_HasNoLegalMoves()
+    {
+        // Setup:
+        // White king e1 (4), white knight e2 (12), black rook e8 (60).
+        // Knight is pinned; any knight move would expose the king.
+        var board = new Board();
+        board[4]  = Piece.White | Piece.King;    // e1
+        board[12] = Piece.White | Piece.Knight;  // e2
+        board[60] = Piece.Black | Piece.Rook;    // e8
+
+        board.GenerateLegalMoves();
+
+        var knightMoves = board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 12).ToList();
+        knightMoves.Count.ShouldBe(0);
+    }
+
+
+    [Fact]
+    public void Pinned_Pawn_EnPassant_Capture_IsIllegal_IfItExposesKing()
+    {
+        // Classic EP pin motif:
+        // White king e1 (4), black rook e8 (60) along the open e-file.
+        // White pawn e5 (36), black pawn d7 (51) will double-push to d5 (35) enabling EP (d6 = 43).
+        // EP move e5xd6 EP would remove the e5 pawn from the e-file and expose the white king to the rook on e8.
+        // Therefore, the EP capture must be excluded from legal moves.
+
+        var board = new Board();
+        board[4]  = Piece.White | Piece.King; // e1
+        board[60] = Piece.Black | Piece.Rook; // e8
+        board[36] = Piece.White | Piece.Pawn; // e5
+        board[51] = Piece.Black | Piece.Pawn; // d7
+
+        // Switch to black, make the double push d7 -> d5
+        board.MakeMove(new Move());
+        board.MakeMove(new Move(51, 35));
+
+        // EP capture from e5 to d6 is (36 -> 43). This should be disallowed due to pin.
+        var illegalEpCapture = new Move(36, 43);
+
+        board.LegalMoves.FriendlyMoves.ShouldNotContain(illegalEpCapture);
+
+        // Normal forward move e5 -> e6 (36 -> 44) should still be legal.
+        var legalForward = new Move(36, 44);
+        board.LegalMoves.FriendlyMoves.ShouldContain(legalForward);
+    }
+
 }

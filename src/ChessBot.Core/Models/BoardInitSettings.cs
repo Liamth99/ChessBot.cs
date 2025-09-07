@@ -4,8 +4,8 @@ public class BoardInitSettings
 {
     public required Piece[] Squares { get; set; }
     public required Piece ColorToMove { get; set; }
-    public required long EnPassantBits { get; set; }
-    public required long ValidCastleBits { get; set; }
+    public required ulong EnPassantBits { get; set; }
+    public required ulong ValidCastleBits { get; set; }
     public required int HalfMoveClock { get; set; }
     public required int FullMoveCount { get; set; }
 

@@ -292,7 +292,7 @@ public partial class LegalMoveTests
         board.MakeMove(new Move(60, 61)); // King move
         
         // En passant should no longer be available
-        board.EnPassantBits.ShouldBe(0);
+        board.EnPassantBits.ShouldBe(0u);
     }
 
     [Fact]
@@ -346,7 +346,7 @@ public partial class LegalMoveTests
         board.MakeMove(new Move(11, 27)); // d2 to d4
         
         // En passant bits should be set for d3 (square 19) - the square the pawn "passed over"
-        (board.EnPassantBits & (0b1L << 19)).ShouldBe(0b1L << 19);
+        (board.EnPassantBits & (0b1L << 19)).ShouldBe(0b1UL << 19);
     }
 
     [Fact]
@@ -361,12 +361,12 @@ public partial class LegalMoveTests
         board.MakeMove(new Move(11, 27)); // d2 to d4
         
         // Verify en passant bits are set
-        board.EnPassantBits.ShouldBe(0b1L << 19);
+        board.EnPassantBits.ShouldBe(0b1UL << 19);
         
         // Black makes any move
         board.MakeMove(new Move(60, 61)); // King move
         
         // En passant bits should be cleared after opponent's turn
-        board.EnPassantBits.ShouldBe(0);
+        board.EnPassantBits.ShouldBe(0u);
     }
 }

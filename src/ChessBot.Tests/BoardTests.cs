@@ -46,36 +46,83 @@ public class BoardTests
     {
         var boardState = BoardUtils.GenerateFromFenString();
         
-        boardState[0].ShouldBe(Piece.White | Piece.Rook);
-        boardState[1].ShouldBe(Piece.White | Piece.Knight);
-        boardState[2].ShouldBe(Piece.White | Piece.Bishop);
-        boardState[3].ShouldBe(Piece.White | Piece.Queen);
-        boardState[4].ShouldBe(Piece.White | Piece.King);
-        boardState[5].ShouldBe(Piece.White | Piece.Bishop);
-        boardState[6].ShouldBe(Piece.White | Piece.Knight);
-        boardState[7].ShouldBe(Piece.White | Piece.Rook);
+        boardState.Squares[0].ShouldBe(Piece.White | Piece.Rook);
+        boardState.Squares[1].ShouldBe(Piece.White | Piece.Knight);
+        boardState.Squares[2].ShouldBe(Piece.White | Piece.Bishop);
+        boardState.Squares[3].ShouldBe(Piece.White | Piece.Queen);
+        boardState.Squares[4].ShouldBe(Piece.White | Piece.King);
+        boardState.Squares[5].ShouldBe(Piece.White | Piece.Bishop);
+        boardState.Squares[6].ShouldBe(Piece.White | Piece.Knight);
+        boardState.Squares[7].ShouldBe(Piece.White | Piece.Rook);
 
         for (int i = 0; i < 8; i++)
         {
-            boardState[i + 8].ShouldBe(Piece.White | Piece.Pawn);
+            boardState.Squares[i + 8].ShouldBe(Piece.White | Piece.Pawn);
         }
         
         for (int i = 0; i < 8; i++)
         {
-            boardState[i + 48].ShouldBe(Piece.Black | Piece.Pawn);
+            boardState.Squares[i + 48].ShouldBe(Piece.Black | Piece.Pawn);
         }
         
-        boardState[56].ShouldBe(Piece.Black | Piece.Rook);
-        boardState[57].ShouldBe(Piece.Black | Piece.Knight);
-        boardState[58].ShouldBe(Piece.Black | Piece.Bishop);
-        boardState[59].ShouldBe(Piece.Black | Piece.Queen);
-        boardState[60].ShouldBe(Piece.Black | Piece.King);
-        boardState[61].ShouldBe(Piece.Black | Piece.Bishop);
-        boardState[62].ShouldBe(Piece.Black | Piece.Knight);
-        boardState[63].ShouldBe(Piece.Black | Piece.Rook);
+        boardState.Squares[56].ShouldBe(Piece.Black | Piece.Rook);
+        boardState.Squares[57].ShouldBe(Piece.Black | Piece.Knight);
+        boardState.Squares[58].ShouldBe(Piece.Black | Piece.Bishop);
+        boardState.Squares[59].ShouldBe(Piece.Black | Piece.Queen);
+        boardState.Squares[60].ShouldBe(Piece.Black | Piece.King);
+        boardState.Squares[61].ShouldBe(Piece.Black | Piece.Bishop);
+        boardState.Squares[62].ShouldBe(Piece.Black | Piece.Knight);
+        boardState.Squares[63].ShouldBe(Piece.Black | Piece.Rook);
+        
+        boardState.EnPassantBits.ShouldBe(0);
+        boardState.ValidCastleBits.ShouldBe((0b11111111L << 56) | 0b11111111);
+        
+        boardState.ColorToMove.ShouldBe(Piece.White);
+        boardState.HalfMoveClock.ShouldBe(0);
+        boardState.FullMoveCount.ShouldBe(1);
     }
 
-    
+    [Fact]
+    public void Fen_WithEnPassant_TargetSquareSet()
+    {
+        // 8/8/8/8/3pP3/8/8/8 b - e3 0 20
+        var fen = "8/8/8/8/3pP3/8/8/8 b - e3 0 20";
+        var state = BoardUtils.GenerateFromFenString(fen);
 
+        // Pieces
+        state.Squares[27].ShouldBe(Piece.Black | Piece.Pawn);  // d4
+        state.Squares[28].ShouldBe(Piece.White | Piece.Pawn);  // e4
+
+        // Side to move
+        state.ColorToMove.ShouldBe(Piece.Black);
+
+        // En passant target
+        var epIndex = BoardUtils.GetIndexByPosition("e3");
+        state.EnPassantBits.ShouldBe(1L << epIndex);
+
+        // Clocks
+        state.HalfMoveClock.ShouldBe(0);
+        state.FullMoveCount.ShouldBe(20);
+    }
     
+    [Theory]
+    [InlineData("K",       (long)0b11110000)]
+    [InlineData("Q",       (long)0b11111)]
+    [InlineData("k",       (long)0b11111 << 56)]
+    [InlineData("q",       (long)0b11110000 << 56)]
+    [InlineData("KQkq",    (0b11111111L << 56) | 0b11111111)]
+    [InlineData("-",       0L)]
+    public void Fen_CastlingRights_SetCastleBits(string castling, long expectedBits)
+    {
+        var fen = $"8/8/8/8/8/8/8/8 w {castling} - 0 1";
+        var state = BoardUtils.GenerateFromFenString(fen);
+        state.ValidCastleBits.ShouldBe(expectedBits);
+    }
+    
+    [Fact]
+    public void Fen_InvalidParts_ThrowsArgumentException()
+    {
+        var invalidFen = "8/8/8/8/8/8/8/8 w - - 0"; // only 5 parts
+        Should.Throw<ArgumentException>(() => BoardUtils.GenerateFromFenString(invalidFen));
+    }
 }

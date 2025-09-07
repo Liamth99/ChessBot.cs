@@ -2,7 +2,7 @@
 
 public class RandomMovePlayer : IPlayer
 {
-    private Random _random = new Random();
+    private static Random _random = new Random();
     
     public Move GetNextMove(Board board)
     {

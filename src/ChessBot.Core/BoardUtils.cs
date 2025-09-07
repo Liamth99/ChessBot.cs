@@ -4,8 +4,15 @@ namespace ChessBot.Core;
 
 public static partial class BoardUtils
 {
-    public static Piece[] GenerateFromFenString(string fenString = @"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+    public static BoardInitSettings GenerateFromFenString(string fenString = @"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
     {
+        var fenParts = fenString.Split(' ');
+
+        if (fenParts.Length is not 6)
+        {
+            throw new ArgumentException("Fen string should contain all 6 parts to be valid", nameof(fenString));
+        }
+        
         Piece[] squares = new Piece[64];
         Dictionary<char, Piece> pieceDic = new()
         {
@@ -17,7 +24,7 @@ public static partial class BoardUtils
             {'p', Piece.Pawn},
         };
 
-        string fenBoard = fenString.Split(' ')[0];
+        string fenBoard = fenParts[0];
         int file = 0;
         int rank = 7;
         
@@ -42,7 +49,26 @@ public static partial class BoardUtils
             }
         }
 
-        return squares;
+        long castleBits = 0;
+
+        if (fenParts[2].Contains('K'))
+            castleBits |= 0b11110000;
+        if (fenParts[2].Contains('Q'))
+            castleBits |= 0b11111;
+        if (fenParts[2].Contains('k'))
+            castleBits |= (long)0b11111 << 56;
+        if (fenParts[2].Contains('q'))
+            castleBits |= (long)0b11110000 << 56;
+
+        return new BoardInitSettings()
+        {
+            Squares = squares,
+            ColorToMove = fenParts[1] == "w" ? Piece.White : Piece.Black,
+            ValidCastleBits = castleBits,
+            EnPassantBits = fenParts[3] == "-" ? 0L : 1L << GetIndexByPosition(fenParts[3]),
+            HalfMoveClock = int.Parse(fenParts[4]),
+            FullMoveCount = int.Parse(fenParts[5])
+        };
     }
     
     public static byte GetIndexByPosition(string position)

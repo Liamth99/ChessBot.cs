@@ -171,7 +171,7 @@ public partial class Board
             {
                 var pieceOnLeftAttack = _squares[leftAttackSquare];
                 if (pieceOnLeftAttack != Piece.None && pieceOnLeftAttack.ToColor() != piece.ToColor() ||
-                    (_enpassantBits & (0b1L << leftAttackSquare)) > 0)
+                    (EnPassantBits & (0b1L << leftAttackSquare)) > 0)
                 {
                     byte leftAttackByte = (byte)leftAttackSquare;
 
@@ -199,7 +199,7 @@ public partial class Board
             {
                 var pieceOnRightAttack = _squares[rightAttackSquare];
                 if (pieceOnRightAttack != Piece.None && pieceOnRightAttack.ToColor() != piece.ToColor() ||
-                    (_enpassantBits & (0b1L << rightAttackSquare)) > 0)
+                    (EnPassantBits & (0b1L << rightAttackSquare)) > 0)
                 {
                     byte rightAttackByte = (byte)rightAttackSquare;
 

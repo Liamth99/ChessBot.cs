@@ -3,13 +3,15 @@
 public partial class Board
 {
     public readonly LegalMoveCollection LegalMoves;
-    public Piece ColorToMove => _colorToMove;
-    public long EnpassantBits => _enpassantBits;
     
-    private readonly Piece[] _squares = new Piece[64];
-    private Piece _colorToMove = Piece.White;
+    public Piece ColorToMove { get; private set; }
+    public long EnPassantBits { get; private set; }
+    public long ValidCastleBits { get; private set; }
+    public int FullMoveCount { get; private set; }
+    public int HalfMoveClock { get; private set; }
 
-    private long _enpassantBits;
+    private readonly Piece[] _squares;
+
 
     static Board()
     {
@@ -39,16 +41,18 @@ public partial class Board
         }
     }
 
-    public Board(Piece[]? board = null, Piece colorToMove = Piece.White)
+    public Board(BoardInitSettings? settings = null)
     {
-        LegalMoves = new(this);
-        board ??= new Piece[64];
+        settings ??= BoardInitSettings.Empty;
         
-        if (board.Length is not 64)
-            throw new IndexOutOfRangeException("Board must contain 64 squares");
-
-        _squares = board;
-        _colorToMove = colorToMove & (Piece.Black | Piece.White);
+        _squares        = settings.Squares;
+        ColorToMove     = settings.ColorToMove;
+        EnPassantBits   = settings.EnPassantBits;
+        ValidCastleBits = settings.ValidCastleBits;
+        FullMoveCount   = settings.FullMoveCount;
+        HalfMoveClock   = settings.HalfMoveClock;
+        
+        LegalMoves = new(this);
 
         GenerateLegalMoves();
     }
@@ -61,20 +65,29 @@ public partial class Board
 
     public void MakeMove(Move move)
     {
-        _colorToMove = _colorToMove.ToggleColor();
-        _enpassantBits = 0;
+        ColorToMove = ColorToMove.ToggleColor();
+        EnPassantBits = 0;
         
         if(move == new Move())
         {
             GenerateLegalMoves();
             return;
         }
+
+        FullMoveCount++;
+        HalfMoveClock++;
+
+        bool isCapture = _squares[move.TargetSquare] is not Piece.None;
+
+        if (isCapture)
+            HalfMoveClock = 0;
         
         _squares[move.TargetSquare] = _squares[move.StartSquare];
         _squares[move.StartSquare] = Piece.None;
 
         if (_squares[move.TargetSquare].IsType(Piece.Pawn))
         {
+            HalfMoveClock = 0;
             
             if (move.TargetSquare.Rank() is 0 or 8)
             {
@@ -86,7 +99,7 @@ public partial class Board
                 int movediff = move.TargetSquare - move.StartSquare;
                 if (movediff is -16 or 16)
                 {
-                    _enpassantBits = 0b1L << (move.TargetSquare - (movediff >> 1));
+                    EnPassantBits = 0b1L << (move.TargetSquare - (movediff >> 1));
                 }
             }
         }

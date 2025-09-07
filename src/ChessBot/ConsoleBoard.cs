@@ -62,7 +62,7 @@ public class ConsoleBoard
                         Console.BackgroundColor = ConsoleColor.Green;
                     
                     
-                    if(ShowEnpassantSquares && (Board.EnpassantBits & (0b1L << (i * 8 + j))) > 1)
+                    if(ShowEnpassantSquares && (Board.EnPassantBits & (0b1L << (i * 8 + j))) > 1)
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.Write("é");
@@ -113,7 +113,7 @@ public class ConsoleBoard
                         }
                         
                         Console.Write($"{i * 8 + j:00}:");
-                        if(ShowEnpassantSquares && (Board.EnpassantBits & (0b1L << (i * 8 + j))) > 1)
+                        if(ShowEnpassantSquares && (Board.EnPassantBits & (0b1L << (i * 8 + j))) > 1)
                         {
                             Console.ForegroundColor = ConsoleColor.Yellow;
                             Console.Write("é");

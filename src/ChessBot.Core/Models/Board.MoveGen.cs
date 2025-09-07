@@ -7,11 +7,18 @@ public partial class Board
     private static readonly ImmutableArray<short> SlidingDirectionOffsets = [8, -8, -1, 1, 7, -7, 9, -9];
     private static readonly short[][] NumSquaresToEdge = new short[64][];
 
+    public const ulong WhiteKingCastle  = 0b11110000UL;
+    public const ulong WhiteQueenCastle = 0b111UL;
+    public const ulong BlackKingCastle  = 0b11100000UL << 56;
+    public const ulong BlackQueenCastle = 0b1111L << 56;
+
+    public const ulong AllCastleBits = BlackKingCastle | BlackQueenCastle | WhiteKingCastle | WhiteQueenCastle;
+
     public void GenerateLegalMoves(bool skipCheckAndLegalMoves = false)
     {
         LegalMoves.Clear();
 
-        short freindlyKingPosIndex = 0;
+        short friendlyKingPosIndex = 0;
 
         for (byte startSquare = 0; startSquare < 64; startSquare++)
         {
@@ -30,7 +37,7 @@ public partial class Board
                     AddKingLegalMoves(startSquare, piece);
                     
                     if (piece.IsType(ColorToMove))
-                        freindlyKingPosIndex = startSquare;
+                        friendlyKingPosIndex = startSquare;
                 }
 
                 if (piece.IsType(Piece.Pawn))
@@ -42,9 +49,9 @@ public partial class Board
             return;
 
         if (ColorToMove is Piece.White)
-            IsCheck = ((1UL << freindlyKingPosIndex) & LegalMoves.BlackAttackBits) > 0;
+            IsCheck = ((1UL << friendlyKingPosIndex) & LegalMoves.BlackAttackBits) > 0;
         else
-            IsCheck = ((1UL << freindlyKingPosIndex) & LegalMoves.WhiteAttackBits) > 0;
+            IsCheck = ((1UL << friendlyKingPosIndex) & LegalMoves.WhiteAttackBits) > 0;
 
         List<Move> actuallyValidMoves = new(256);
         Move[] enemyMoves = LegalMoves.EnemyMoves.ToArray();
@@ -56,7 +63,7 @@ public partial class Board
             futureBoard.MakeMove(move, true);
 
             bool nextTurnCheck;
-            short nextKingPos = freindlyKingPosIndex == move.StartSquare ? move.TargetSquare : freindlyKingPosIndex;
+            short nextKingPos = friendlyKingPosIndex == move.StartSquare ? move.TargetSquare : friendlyKingPosIndex;
             
             if (ColorToMove is Piece.White)
                 nextTurnCheck = ((1UL << nextKingPos) & futureBoard.LegalMoves.BlackAttackBits) > 0;

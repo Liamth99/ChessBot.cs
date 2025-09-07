@@ -52,13 +52,13 @@ public static partial class BoardUtils
         ulong castleBits = 0;
 
         if (fenParts[2].Contains('K'))
-            castleBits |= 0b11110000;
+            castleBits |= Board.WhiteKingCastle;
         if (fenParts[2].Contains('Q'))
-            castleBits |= 0b11111;
+            castleBits |= Board.WhiteQueenCastle;
         if (fenParts[2].Contains('k'))
-            castleBits |= (ulong)0b11111 << 56;
+            castleBits |= Board.BlackKingCastle;
         if (fenParts[2].Contains('q'))
-            castleBits |= (ulong)0b11110000 << 56;
+            castleBits |= Board.BlackQueenCastle;
 
         return new BoardInitSettings()
         {

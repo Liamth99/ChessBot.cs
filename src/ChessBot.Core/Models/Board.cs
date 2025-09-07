@@ -123,7 +123,33 @@ public partial class Board
                 }
             }
         }
-        
+
+        if (_squares[move.TargetSquare].IsType(Piece.King))
+        {
+            if (_squares[move.TargetSquare].IsType(Piece.White))
+                ValidCastleBits &= ~(WhiteKingCastle | WhiteQueenCastle);
+            else
+                ValidCastleBits &= ~(BlackKingCastle | BlackQueenCastle);
+        }
+
+        if (_squares[move.TargetSquare].IsType(Piece.Rook))
+        {
+            if (_squares[move.TargetSquare].IsType(Piece.White))
+            {
+                if((move.StartSquare.ToIntBit() & WhiteKingCastle) > 0)
+                    ValidCastleBits &= ~WhiteKingCastle;
+                else
+                    ValidCastleBits &= ~WhiteQueenCastle;
+            }
+            else
+            {
+                if((move.StartSquare.ToIntBit() & BlackKingCastle) > 0)
+                    ValidCastleBits &= ~BlackKingCastle;
+                else
+                    ValidCastleBits &= ~BlackQueenCastle;
+            }
+        }
+
         GenerateLegalMoves(skipCheckAndLegalMoves);
     }
 }

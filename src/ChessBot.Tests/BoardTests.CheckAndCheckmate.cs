@@ -6,7 +6,7 @@ public partial class BoardTests
     public void Checkmate_FoolsMate_IsDetected()
     {
         // Position after: 1. f3 e5 2. g4 Qh4#
-        var fen = "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3";
+        var fen = "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w - - 1 3";
         var settings = BoardUtils.GenerateFromFenString(fen);
         var board = new Board(settings);
 

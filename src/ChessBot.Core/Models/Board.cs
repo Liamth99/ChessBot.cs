@@ -14,7 +14,9 @@ public partial class Board
     public bool IsDraw { get; private set; }
 
     private readonly Piece[] _squares;
-
+    public ulong WhitePieces { get; private set; }
+    public ulong BlackPieces { get; private set; }
+    
     static Board()
     {
         for (short file = 0; file < 8; file++)
@@ -111,7 +113,7 @@ public partial class Board
             
             if (move.TargetSquare.Rank() is 0 or 8)
             {
-                // Toggle the bits from the promotion flag and the pown flag to change the piece type
+                // Toggle the bits from the promotion flag and the pawn flag to change the piece type
                 _squares[move.TargetSquare] ^= (Piece)((byte)move.Promotion | (byte)Piece.Pawn);
             }
             else
@@ -127,9 +129,35 @@ public partial class Board
         if (_squares[move.TargetSquare].IsType(Piece.King))
         {
             if (_squares[move.TargetSquare].IsType(Piece.White))
+            {
                 ValidCastleBits &= ~(WhiteKingCastle | WhiteQueenCastle);
+                
+                if (move.CastlingSquare is 0 && _squares[0] is not Piece.None)
+                {
+                    _squares[0] = Piece.None;
+                    _squares[03] = Piece.White | Piece.Rook;
+                }
+                else if (move.CastlingSquare is 07)
+                {
+                    _squares[07] = Piece.None;
+                    _squares[05] = Piece.White | Piece.Rook;
+                }
+            }
             else
+            {
                 ValidCastleBits &= ~(BlackKingCastle | BlackQueenCastle);
+                
+                if (move.CastlingSquare is 63)
+                {
+                    _squares[63] = Piece.None;
+                    _squares[61] = Piece.Black | Piece.Rook;
+                }
+                else if (move.CastlingSquare is 56)
+                {
+                    _squares[56] = Piece.None;
+                    _squares[59] = Piece.Black | Piece.Rook;
+                }
+            }
         }
 
         if (_squares[move.TargetSquare].IsType(Piece.Rook))

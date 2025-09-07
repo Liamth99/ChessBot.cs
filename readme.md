@@ -25,7 +25,7 @@ And then maybe in the future ill make one in a functional language or use a Neur
      - [x] Pawn Promotion
      - [x] Diagonal Attacks
      - [x] En Passant
-   - [ ] Castling
+   - [x] Castling
    - [x] Check And Checkmate
    - [x] Illegal Moves
    - [ ] Game Draws
@@ -34,6 +34,7 @@ And then maybe in the future ill make one in a functional language or use a Neur
      - [x] Fifty-Move Rule
      - [ ] Insufficient Material
  - [x] Abstract Input System (Player Input And Random Move Input As a Start) 
+ - [ ] Setup large validation tests to make sure the core engine is definitely bug free.
  - [ ] Basic MiniMax Evaluation Player Input
 
 ## Phase Two: Make It Not Suck

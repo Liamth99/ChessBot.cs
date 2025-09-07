@@ -19,6 +19,9 @@ public partial class Board
         LegalMoves.Clear();
 
         short friendlyKingPosIndex = 0;
+        
+        WhitePieces = 0;
+        BlackPieces = 0;
 
         for (byte startSquare = 0; startSquare < 64; startSquare++)
         {
@@ -26,6 +29,11 @@ public partial class Board
 
             if (piece.ToColor() is not Piece.None)
             {
+                if (piece.IsType(Piece.White))
+                    WhitePieces |= startSquare.ToIntBit();
+                else
+                    BlackPieces |= startSquare.ToIntBit();
+                
                 if (piece.ContainsAnyType(Piece.SlidingPiece))
                     AddSlidingLegalMoves(startSquare, piece);
 
@@ -45,13 +53,27 @@ public partial class Board
             }
         }
         
+        if (ColorToMove is Piece.White)
+        {
+            if ((ValidCastleBits & WhiteKingCastle) > 0)
+                LegalMoves.Add(new (04, 06, PromotionFlag.None, 07));
+            if((ValidCastleBits & WhiteQueenCastle) > 0)
+                LegalMoves.Add(new (04, 01, PromotionFlag.None, 00));
+            
+            IsCheck = ((1UL << friendlyKingPosIndex) & LegalMoves.BlackAttackBits) > 0;
+        }
+        else
+        {
+            if ((ValidCastleBits & BlackKingCastle) > 0)
+                LegalMoves.Add(new (60, 62, PromotionFlag.None, 63));
+            if((ValidCastleBits & BlackQueenCastle) > 0)
+                LegalMoves.Add(new (60, 58, PromotionFlag.None, 56));
+            
+            IsCheck = ((1UL << friendlyKingPosIndex) & LegalMoves.WhiteAttackBits) > 0;
+        }
+        
         if(skipCheckAndLegalMoves)
             return;
-
-        if (ColorToMove is Piece.White)
-            IsCheck = ((1UL << friendlyKingPosIndex) & LegalMoves.BlackAttackBits) > 0;
-        else
-            IsCheck = ((1UL << friendlyKingPosIndex) & LegalMoves.WhiteAttackBits) > 0;
 
         List<Move> actuallyValidMoves = new(256);
         Move[] enemyMoves = LegalMoves.EnemyMoves.ToArray();

@@ -1,25 +1,26 @@
 ﻿namespace ChessBot.Core.Models;
 
 /// <summary>
-/// First Byte:  Unused <br/>
+/// First Byte:  Castling information (the location of the rook)<br/>
 /// Second Byte: Promotion Flag<br/>
 /// Third Byte:  StartSquare<br/>
 /// Last Byte:   TargetSquare<br/>
 /// </summary>
 public readonly struct Move : IEquatable<Move>
 {
-    public Move(byte startSquare, byte targetSquare, PromotionFlag promotion = PromotionFlag.None)
+    public Move(byte startSquare, byte targetSquare, PromotionFlag promotion = PromotionFlag.None, byte castlingSquare = 0)
     {
-        _moveData = (int)promotion << 16 | startSquare << 8 | targetSquare;
+        _moveData = (uint)(castlingSquare << 24 | (int)promotion << 16 | startSquare << 8 | targetSquare);
     }
     
-    public Move(int startSquare, int targetSquare, PromotionFlag promotion = PromotionFlag.None)
+    public Move(int startSquare, int targetSquare, PromotionFlag promotion = PromotionFlag.None, int castlingSquare = 0)
     {
-        _moveData = (int)promotion << 16 | (byte)startSquare << 8 | (byte)targetSquare;
+        _moveData = (uint)(castlingSquare << 24 | (int)promotion << 16 | (byte)startSquare << 8 | (byte)targetSquare);
     }
 
-    private readonly int _moveData;
-    
+    private readonly uint _moveData;
+
+    public Byte CastlingSquare => (byte)(_moveData >> 24);
     public PromotionFlag Promotion => (PromotionFlag)(_moveData >> 16);
     public byte StartSquare => (byte)(_moveData >> 8);
     public byte TargetSquare => (byte)_moveData;
@@ -36,7 +37,7 @@ public readonly struct Move : IEquatable<Move>
 
     public override int GetHashCode()
     {
-        return _moveData;
+        return (int)_moveData;
     }
 
     public static bool operator ==(Move left, Move right)

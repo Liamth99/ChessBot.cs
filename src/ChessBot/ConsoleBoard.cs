@@ -101,7 +101,6 @@ public class ConsoleBoard
                         else
                             Console.ForegroundColor = ConsoleColor.DarkGray;
 
-                        Console.Write("[");
                         if (ShowValidMoves)
                         {
                             var prevColor = Console.ForegroundColor;
@@ -109,7 +108,13 @@ public class ConsoleBoard
                             if(Board.LegalMoves.FriendlyMoves.Any(x => x.TargetSquare == (byte)(i * 8 + j)))
                                 Console.ForegroundColor = ConsoleColor.Green;
                             
+                            Console.Write("[");
+                            
                             Console.ForegroundColor = prevColor;
+                        }
+                        else
+                        {
+                            Console.Write("[");
                         }
                         
                         Console.Write($"{i * 8 + j:00}:");
@@ -125,11 +130,18 @@ public class ConsoleBoard
 
                         Console.ResetColor();
                         
-                        if (ShowValidMoves)
-                        {
-                            if(Board.LegalMoves.FriendlyMoves.Any(x => x.TargetSquare == (byte)(i * 8 + j)))
-                                Console.ForegroundColor = ConsoleColor.Green;
-                        }
+                        if ((piece & Piece.White) == Piece.White)
+                            Console.ForegroundColor = ConsoleColor.White;
+
+                        else if ((piece & Piece.Black) == Piece.Black)
+                            Console.ForegroundColor = ConsoleColor.Black;
+
+                        else
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                        
+                        if(ShowValidMoves && Board.LegalMoves.FriendlyMoves.Any(x => x.TargetSquare == (byte)(i * 8 + j)))
+                            Console.ForegroundColor = ConsoleColor.Green;
+                       
                         Console.Write("]");
                     }
                 }

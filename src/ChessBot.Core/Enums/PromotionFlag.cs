@@ -1,7 +1,7 @@
 ﻿namespace ChessBot.Core.Enums;
 
 [Flags]
-public enum PromotionFlag : uint
+public enum PromotionFlag : byte
 {
     None,
     Bishop = 2,

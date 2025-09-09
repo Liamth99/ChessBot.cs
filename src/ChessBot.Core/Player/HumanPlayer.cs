@@ -4,9 +4,9 @@ public class HumanPlayer : IPlayer
 {
     public Move GetNextMove(Board board)
     {
-        var move = new Move();
+        Move? move = null;
 
-        while (!board.LegalMoves.FriendlyMoves.Contains(move))
+        while (true)
         {
             var input = Console.ReadLine();
 
@@ -22,10 +22,17 @@ public class HumanPlayer : IPlayer
 
             var startIndex = BoardUtils.GetIndexByPosition(positions[0]);
             var endIndex   = BoardUtils.GetIndexByPosition(positions[1]);
+            PromotionFlag promFlag = PromotionFlag.None;
 
-            move = new Move(startIndex, endIndex);
+            if (positions.Length is 3)
+                promFlag = Enum.Parse<PromotionFlag>(positions[2]);
+
+
+            move = board.LegalMoves.FriendlyMoves.FirstOrDefault(x =>
+                x.StartSquare == startIndex && x.TargetSquare == endIndex && x.Promotion == promFlag);
+
+            if (move != new Move())
+                return move.Value;
         }
-
-        return move;
     }
 }

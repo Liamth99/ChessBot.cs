@@ -132,6 +132,9 @@ public partial class Board
 
         if (HalfMoveClock >= 50)
             IsDraw = true;
+
+        if(!IsDraw)
+            IsDraw = HasInsufficientMaterial();
     }
 
     private void AddSlidingLegalMoves(byte startSquare, Piece piece)

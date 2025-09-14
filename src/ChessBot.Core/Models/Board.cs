@@ -185,4 +185,58 @@ public partial class Board
 
         GenerateLegalMoves(skipCheckAndLegalMoves);
     }
+    
+    private bool HasInsufficientMaterial()
+    {
+        var wPawns   = _squares.Count(x => x.IsType(Piece.White | Piece.Pawn));
+        var wRooks   = _squares.Count(x => x.IsType(Piece.White | Piece.Rook));
+        var wQueens  = _squares.Count(x => x.IsType(Piece.White | Piece.Queen));
+        var wBishops = _squares.Count(x => x.IsType(Piece.White | Piece.Bishop));
+        var wKnights = _squares.Count(x => x.IsType(Piece.White | Piece.Knight));
+        
+        var bPawns   = _squares.Count(x => x.IsType(Piece.Black | Piece.Pawn));
+        var bRooks   = _squares.Count(x => x.IsType(Piece.Black | Piece.Rook));
+        var bQueens  = _squares.Count(x => x.IsType(Piece.Black | Piece.Queen));
+        var bBishops = _squares.Count(x => x.IsType(Piece.Black | Piece.Bishop));
+        var bKnights = _squares.Count(x => x.IsType(Piece.Black | Piece.Knight));
+
+        if (wPawns + bPawns > 0) 
+            return false;
+        
+        if (wRooks + bRooks > 0) 
+            return false;
+        
+        if (wQueens + bQueens > 0) 
+            return false;
+
+        int wMinors = wBishops + wKnights;
+        int bMinors = bBishops + bKnights;
+        int totalMinors = wMinors + bMinors;
+
+        if (totalMinors == 0) 
+            return true;
+
+        if (totalMinors == 1) 
+            return true;
+
+        if (totalMinors == 2)
+        {
+            if (wMinors == 2)
+            {
+                if (wBishops >= 2 || (wBishops >= 1 && wKnights >= 1)) 
+                    return false;
+                
+                return true;
+            }
+            if (bMinors == 2)
+            {
+                if (bBishops >= 2 || (bBishops >= 1 && bKnights >= 1)) 
+                    return false;
+            }
+            
+            return true;
+        }
+
+        return false;
+    }
 }

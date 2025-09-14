@@ -32,7 +32,7 @@ And then maybe in the future ill make one in a functional language or use a Neur
      - [x] Stalemate
      - [ ] Threefold Repetition
      - [x] Fifty-Move Rule
-     - [ ] Insufficient Material
+     - [x] Insufficient Material
  - [x] Abstract Input System (Player Input And Random Move Input As a Start) 
  - [ ] Setup large validation tests to make sure the core engine is definitely bug free.
  - [ ] Basic MiniMax Evaluation Player Input

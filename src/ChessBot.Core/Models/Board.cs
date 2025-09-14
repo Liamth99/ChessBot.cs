@@ -88,7 +88,7 @@ public partial class Board
     public void MakeMove(Move move, bool skipCheckAndLegalMoves = false)
     {
     #if DEBUG
-        if (LegalMoves.FriendlyMoves.Contains(move))
+        if (!LegalMoves.FriendlyMoves.Contains(move))
             throw new InvalidOperationException("Move is not a legal move to play");
     #endif
         

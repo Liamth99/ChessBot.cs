@@ -137,15 +137,15 @@ public partial class Board
             {
                 ValidCastleBits &= ~(WhiteKingCastle | WhiteQueenCastle);
                 
-                if (move.CastlingSquare is 0 && _squares[0] is not Piece.None)
-                {
-                    _squares[0] = Piece.None;
-                    _squares[03] = Piece.White | Piece.Rook;
-                }
-                else if (move.CastlingSquare is 07)
+                if (move.CastlingSquare is 07)
                 {
                     _squares[07] = Piece.None;
                     _squares[05] = Piece.White | Piece.Rook;
+                }
+                else if (move.StartSquare is 4 && move.TargetSquare is 2)
+                {
+                    _squares[0] = Piece.None;
+                    _squares[03] = Piece.White | Piece.Rook;
                 }
             }
             else

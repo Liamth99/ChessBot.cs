@@ -3,7 +3,7 @@
 public partial class LegalMoveTests
 {
     [Fact]
-    public void GeneratedMoves_Knight_AreValid()
+    public void Knight_AreValid()
     {
         var board = new Board();
 
@@ -19,7 +19,7 @@ public partial class LegalMoveTests
     }
     
     [Fact]
-    public void GeneratedMoves_Knight_AreValidCutoffOuterRight()
+    public void Knight_AreValidCutoffOuterRight()
     {
         var board = new Board();
         
@@ -36,7 +36,7 @@ public partial class LegalMoveTests
     }
     
     [Fact]
-    public void GeneratedMoves_Knight_AreValidCutoffOuterAndInnerRight()
+    public void Knight_AreValidCutoffOuterAndInnerRight()
     {
         var board = new Board();
         
@@ -53,7 +53,7 @@ public partial class LegalMoveTests
     }
     
     [Fact]
-    public void GeneratedMoves_Knight_AreValidCutoffOuterLeft()
+    public void Knight_AreValidCutoffOuterLeft()
     {
         var board = new Board();
         
@@ -71,7 +71,7 @@ public partial class LegalMoveTests
     }
     
     [Fact]
-    public void GeneratedMoves_Knight_AreValidCutoffOuterAndInnerLeft()
+    public void Knight_AreValidCutoffOuterAndInnerLeft()
     {
         var board = new Board();
         
@@ -88,7 +88,7 @@ public partial class LegalMoveTests
     }
     
     [Fact]
-    public void GeneratedMoves_Knight_AreValidCutoffOuterTop()
+    public void Knight_AreValidCutoffOuterTop()
     {
         var board = new Board();
         
@@ -105,7 +105,7 @@ public partial class LegalMoveTests
     }
     
     [Fact]
-    public void GeneratedMoves_Knight_AreValidCutoffOuterAndInnerTop()
+    public void Knight_AreValidCutoffOuterAndInnerTop()
     {
         var board = new Board();
         

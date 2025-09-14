@@ -3,7 +3,7 @@
 public partial class LegalMoveTests
 {
     [Fact]
-    public void GeneratedMoves_AttackBits_WhitePawnPushes_SetCorrectly()
+    public void AttackBits_WhitePawnPushes_SetCorrectly()
     {
         var board = new Board();
 
@@ -18,7 +18,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_AttackBits_BlackPawnPushes_SetCorrectly()
+    public void BlackPawnPushes_SetCorrectly()
     {
         var board = new Board();
 
@@ -35,7 +35,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_AttackBits_MixedPieces_SetCorrectly()
+    public void MixedPieces_SetCorrectly()
     {
         var board = new Board();
 
@@ -83,7 +83,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_AttackBits_WhiteEnPassantCapture_Included()
+    public void AttackBits_WhiteEnPassantCapture_Included()
     {
         var board = new Board();
 

@@ -3,7 +3,7 @@
 public partial class LegalMoveTests
 {
     [Fact]
-    public void GeneratedMoves_Pawn_White_AreValid()
+    public void Pawn_White_AreValid()
     {
         var board = new Board();
 
@@ -19,7 +19,7 @@ public partial class LegalMoveTests
     }
     
     [Fact]
-    public void GeneratedMoves_Pawn_Black_AreValidPromotion()
+    public void Pawn_Black_AreValidPromotion()
     {
         var board = new Board();
 
@@ -40,7 +40,7 @@ public partial class LegalMoveTests
     }
     
     [Fact]
-    public void GeneratedMoves_Pawn_White_AreValidPromotion()
+    public void Pawn_White_AreValidPromotion()
     {
         var board = new Board();
 
@@ -59,7 +59,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Pawn_White_DiagonalCapture()
+    public void Pawn_White_DiagonalCapture()
     {
         var board = new Board();
 
@@ -77,7 +77,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Pawn_Black_DiagonalCapture()
+    public void Pawn_Black_DiagonalCapture()
     {
         var board = new Board();
 
@@ -94,7 +94,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Pawn_White_RightDiagonalCaptureWithPromotion()
+    public void Pawn_White_RightDiagonalCaptureWithPromotion()
     {
         var board = new Board();
 
@@ -116,7 +116,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Pawn_Black_RightDiagonalCaptureWithPromotion()
+    public void Pawn_Black_RightDiagonalCaptureWithPromotion()
     {
         var board = new Board();
 
@@ -137,7 +137,7 @@ public partial class LegalMoveTests
         ]);
     }
     [Fact]
-    public void GeneratedMoves_Pawn_White_SingleDiagonalCapture()
+    public void Pawn_White_SingleDiagonalCapture()
     {
         var board = new Board();
 
@@ -154,7 +154,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Pawn_White_LeftDiagonalCaptureWithPromotion()
+    public void Pawn_White_LeftDiagonalCaptureWithPromotion()
     {
         var board = new Board();
 
@@ -175,7 +175,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Pawn_Black_LeftDiagonalCaptureWithPromotion()
+    public void Pawn_Black_LeftDiagonalCaptureWithPromotion()
     {
         var board = new Board();
 
@@ -196,7 +196,7 @@ public partial class LegalMoveTests
     }
     
     [Fact]
-    public void GeneratedMoves_Pawn_White_EnPassantAttack_Right()
+    public void Pawn_White_EnPassantAttack_Right()
     {
         var board = new Board();
         
@@ -216,7 +216,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Pawn_White_EnPassantAttack_Left()
+    public void Pawn_White_EnPassantAttack_Left()
     {
         var board = new Board();
         
@@ -236,7 +236,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Pawn_Black_EnPassantAttack_Right()
+    public void Pawn_Black_EnPassantAttack_Right()
     {
         var board = new Board();
         
@@ -253,7 +253,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Pawn_Black_EnPassantAttack_Left()
+    public void Pawn_Black_EnPassantAttack_Left()
     {
         var board = new Board();
         
@@ -270,7 +270,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Pawn_EnPassantAttack_NotAvailableAfterOtherMove()
+    public void Pawn_EnPassantAttack_NotAvailableAfterOtherMove()
     {
         var board = new Board();
         
@@ -296,7 +296,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Pawn_EnPassantAttack_AFile()
+    public void Pawn_EnPassantAttack_AFile()
     {
         var board = new Board();
         
@@ -316,7 +316,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Pawn_EnPassantAttack_HFile()
+    public void Pawn_EnPassantAttack_HFile()
     {
         var board = new Board();
         
@@ -336,7 +336,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Pawn_EnPassantBits_SetCorrectly()
+    public void Pawn_EnPassantBits_SetCorrectly()
     {
         var board = new Board();
         
@@ -350,7 +350,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Pawn_EnPassantBits_ClearedAfterMove()
+    public void Pawn_EnPassantBits_ClearedAfterMove()
     {
         var board = new Board();
         

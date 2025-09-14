@@ -3,7 +3,7 @@
 public partial class LegalMoveTests
 {
     [Fact]
-    public void GeneratedMoves_Queen_AreValid()
+    public void Queen_AreValid()
     {
         var board = new Board();
 
@@ -20,7 +20,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Queen_AreValidWithEnemyBlock()
+    public void Queen_AreValidWithEnemyBlock()
     {
         var board = new Board();
 

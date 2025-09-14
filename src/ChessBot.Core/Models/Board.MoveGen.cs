@@ -7,10 +7,15 @@ public partial class Board
     private static readonly ImmutableArray<short> SlidingDirectionOffsets = [8, -8, -1, 1, 7, -7, 9, -9];
     private static readonly short[][] NumSquaresToEdge = new short[64][];
 
-    public const ulong WhiteKingCastle  = 0b11100000UL;
-    public const ulong WhiteQueenCastle = 0b1111UL;
-    public const ulong BlackKingCastle  = 0b11100000UL << 56;
-    public const ulong BlackQueenCastle = 0b1111L << 56;
+    public const ulong WhiteKingCastle  = 0b1110_0000UL;
+    public const ulong WhiteQueenCastle = 0b0000_1111UL;
+    public const ulong BlackKingCastle  = WhiteKingCastle << 56;
+    public const ulong BlackQueenCastle = WhiteQueenCastle << 56;
+
+    public const ulong WhiteKingCastleEmpty  = 0b0110_0000UL;
+    public const ulong WhiteQueenCastleEmpty = 0b0000_1110UL;
+    public const ulong BlackKingCastleEmpty  = WhiteKingCastleEmpty << 56;
+    public const ulong BlackQueenCastleEmpty = WhiteQueenCastleEmpty << 56;
 
     public const ulong AllCastleBits = BlackKingCastle | BlackQueenCastle | WhiteKingCastle | WhiteQueenCastle;
 
@@ -55,21 +60,37 @@ public partial class Board
         
         if (ColorToMove is Piece.White)
         {
-            if ((ValidCastleBits & WhiteKingCastle) > 0)
-                LegalMoves.Add(new (04, 06, PromotionFlag.None, 07));
-            if((ValidCastleBits & WhiteQueenCastle) > 0)
-                LegalMoves.Add(new (04, 01, PromotionFlag.None, 00));
-            
             IsCheck = ((1UL << friendlyKingPosIndex) & LegalMoves.BlackAttackBits) > 0;
+
+            if (!IsCheck)
+            {
+                if ((ValidCastleBits & WhiteKingCastle) is not 0 &&
+                    ((WhitePieces | BlackPieces | LegalMoves.BlackAttackBits) & WhiteKingCastleEmpty) is 0)
+                    LegalMoves.Add(new(04, 06, PromotionFlag.None, 07));
+
+                if ((ValidCastleBits & WhiteQueenCastle) is not 0 &&
+                    ((WhitePieces | BlackPieces | LegalMoves.BlackAttackBits) & WhiteQueenCastleEmpty) is 0)
+                    LegalMoves.Add(new(04, 02, PromotionFlag.None, 00));
+            }
         }
         else
         {
-            if ((ValidCastleBits & BlackKingCastle) > 0)
-                LegalMoves.Add(new (60, 62, PromotionFlag.None, 63));
-            if((ValidCastleBits & BlackQueenCastle) > 0)
-                LegalMoves.Add(new (60, 58, PromotionFlag.None, 56));
-            
             IsCheck = ((1UL << friendlyKingPosIndex) & LegalMoves.WhiteAttackBits) > 0;
+
+            if (!IsCheck)
+            {
+                if ((ValidCastleBits & BlackKingCastle) is not 0 &&
+                    ((WhitePieces | BlackPieces | LegalMoves.WhiteAttackBits) & BlackKingCastleEmpty) is 0)
+                {
+                    LegalMoves.Add(new(60, 62, PromotionFlag.None, 63));
+                }
+
+                if ((ValidCastleBits & BlackQueenCastle) is not 0 &&
+                    ((WhitePieces | BlackPieces | LegalMoves.WhiteAttackBits) & BlackQueenCastleEmpty) is 0)
+                {
+                    LegalMoves.Add(new(60, 58, PromotionFlag.None, 56));
+                }
+            }
         }
         
         if(skipCheckAndLegalMoves)

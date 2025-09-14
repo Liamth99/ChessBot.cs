@@ -3,7 +3,7 @@
 public partial class LegalMoveTests
 {
     [Fact]
-    public void GeneratedMoves_Bishop_AreValid()
+    public void Bishop_AreValid()
     {
         var board = new Board();
 
@@ -19,7 +19,7 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void GeneratedMoves_Bishop_AreValidWithEnemyBlock()
+    public void Bishop_AreValidWithEnemyBlock()
     {
         var board = new Board();
 

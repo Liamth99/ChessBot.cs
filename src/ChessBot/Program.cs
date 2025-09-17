@@ -1,7 +1,7 @@
 ﻿IPlayer whitePlayer = new HumanPlayer();
 IPlayer blackPlayer = new HumanPlayer();
 
-var board = new Board(BoardUtils.GenerateFromFenString("4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1"));
+var board = new Board(BoardUtils.GenerateFromFenString());
 var consoleBoard = new ConsoleBoard(board);
 
 consoleBoard.ShowSquareIndexes = true;

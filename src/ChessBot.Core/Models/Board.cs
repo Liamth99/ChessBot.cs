@@ -101,22 +101,38 @@ public partial class Board
             return;
         }
 
-        FullMoveCount++;
+        if (ColorToMove == Piece.White)
+            FullMoveCount++;
+
         HalfMoveClock++;
 
-        bool isCapture = _squares[move.TargetSquare] is not Piece.None;
+        var movedPiece = _squares[move.StartSquare];
+        var pieceOnTargetBeforeMove = _squares[move.TargetSquare];
+        bool isCapture = pieceOnTargetBeforeMove is not Piece.None;
 
         if (isCapture)
             HalfMoveClock = 0;
         
-        _squares[move.TargetSquare] = _squares[move.StartSquare];
+        // Clear castling rights if a rook is captured on its original corner
+        if (isCapture && pieceOnTargetBeforeMove.IsType(Piece.Rook))
+        {
+            switch (move.TargetSquare)
+            {
+                case 07: ValidCastleBits &= ~WhiteKingCastle; break;
+                case 00: ValidCastleBits &= ~WhiteQueenCastle; break;
+                case 63: ValidCastleBits &= ~BlackKingCastle; break;
+                case 56: ValidCastleBits &= ~BlackQueenCastle; break;
+            }
+        }
+        
+        _squares[move.TargetSquare] = movedPiece;
         _squares[move.StartSquare] = Piece.None;
 
-        if (_squares[move.TargetSquare].IsType(Piece.Pawn))
+        if (movedPiece.IsType(Piece.Pawn))
         {
             HalfMoveClock = 0;
             
-            if (move.TargetSquare.Rank() is 0 or 8)
+            if (move.TargetSquare.Rank() is 0 or 7)
             {
                 // Toggle the bits from the promotion flag and the pawn flag to change the piece type
                 _squares[move.TargetSquare] ^= (Piece)((byte)move.Promotion | (byte)Piece.Pawn);
@@ -129,11 +145,24 @@ public partial class Board
                     EnPassantBits = 0b1UL << (move.TargetSquare - (movediff >> 1));
                 }
             }
+
+            var dif = move.TargetSquare - move.StartSquare;
+            
+            switch (dif)
+            {
+                case 9 or -7:
+                    _squares[move.StartSquare + 1] = Piece.None;
+                    break;
+                
+                case 7 or -9:
+                    _squares[move.StartSquare - 1] = Piece.None;
+                    break;
+            }
         }
 
-        if (_squares[move.TargetSquare].IsType(Piece.King))
+        if (movedPiece.IsType(Piece.King))
         {
-            if (_squares[move.TargetSquare].IsType(Piece.White))
+            if (movedPiece.IsType(Piece.White))
             {
                 ValidCastleBits &= ~(WhiteKingCastle | WhiteQueenCastle);
                 
@@ -165,9 +194,9 @@ public partial class Board
             }
         }
 
-        if (_squares[move.TargetSquare].IsType(Piece.Rook))
+        if (movedPiece.IsType(Piece.Rook))
         {
-            if (_squares[move.TargetSquare].IsType(Piece.White))
+            if (movedPiece.IsType(Piece.White))
             {
                 if((move.StartSquare.ToIntBit() & WhiteKingCastle) > 0)
                     ValidCastleBits &= ~WhiteKingCastle;

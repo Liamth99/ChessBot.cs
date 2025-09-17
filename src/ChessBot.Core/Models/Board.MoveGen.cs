@@ -17,11 +17,20 @@ public partial class Board
     public const ulong BlackKingCastleEmpty  = WhiteKingCastleEmpty << 56;
     public const ulong BlackQueenCastleEmpty = WhiteQueenCastleEmpty << 56;
 
+    public const ulong WhiteKingCastleSafety  = 0b0110_0000UL;
+    public const ulong WhiteQueenCastleSafety = 0b0000_1100UL;
+    public const ulong BlackKingCastleSafety  = WhiteKingCastleSafety << 56;
+    public const ulong BlackQueenCastleSafety = WhiteQueenCastleSafety << 56;
+
     public const ulong AllCastleBits = BlackKingCastle | BlackQueenCastle | WhiteKingCastle | WhiteQueenCastle;
 
     public void GenerateLegalMoves(bool skipCheckAndLegalMoves = false)
     {
         LegalMoves.Clear();
+        
+        IsCheck = false;
+        IsMate  = false;
+        IsDraw  = false;
 
         short friendlyKingPosIndex = 0;
         
@@ -64,13 +73,11 @@ public partial class Board
 
             if (!IsCheck)
             {
-                if ((ValidCastleBits & WhiteKingCastle) is not 0 &&
-                    ((WhitePieces | BlackPieces | LegalMoves.BlackAttackBits) & WhiteKingCastleEmpty) is 0)
-                    LegalMoves.Add(new(04, 06, PromotionFlag.None, 07));
+                if ((ValidCastleBits & WhiteKingCastle) is not 0 && ((WhitePieces | BlackPieces) & WhiteKingCastleEmpty) is 0 && (WhiteKingCastleSafety & LegalMoves.BlackAttackBits) is 0)
+                        LegalMoves.Add(new(04, 06, PromotionFlag.None, 07));
 
-                if ((ValidCastleBits & WhiteQueenCastle) is not 0 &&
-                    ((WhitePieces | BlackPieces | LegalMoves.BlackAttackBits) & WhiteQueenCastleEmpty) is 0)
-                    LegalMoves.Add(new(04, 02, PromotionFlag.None, 00));
+                if ((ValidCastleBits & WhiteQueenCastle) is not 0 && ((WhitePieces | BlackPieces) & WhiteQueenCastleEmpty) is 0 && (WhiteQueenCastleSafety & LegalMoves.BlackAttackBits) is 0)
+                        LegalMoves.Add(new(04, 02, PromotionFlag.None, 00));
             }
         }
         else
@@ -79,14 +86,12 @@ public partial class Board
 
             if (!IsCheck)
             {
-                if ((ValidCastleBits & BlackKingCastle) is not 0 &&
-                    ((WhitePieces | BlackPieces | LegalMoves.WhiteAttackBits) & BlackKingCastleEmpty) is 0)
+                if ((ValidCastleBits & BlackKingCastle) is not 0 && ((WhitePieces | BlackPieces) & BlackKingCastleEmpty) is 0 && (BlackKingCastleSafety & LegalMoves.WhiteAttackBits) is 0)
                 {
                     LegalMoves.Add(new(60, 62, PromotionFlag.None, 63));
                 }
 
-                if ((ValidCastleBits & BlackQueenCastle) is not 0 &&
-                    ((WhitePieces | BlackPieces | LegalMoves.WhiteAttackBits) & BlackQueenCastleEmpty) is 0)
+                if ((ValidCastleBits & BlackQueenCastle) is not 0 && ((WhitePieces | BlackPieces) & BlackQueenCastleEmpty) is 0 && (BlackQueenCastleSafety & LegalMoves.WhiteAttackBits) is 0)
                 {
                     LegalMoves.Add(new(60, 58, PromotionFlag.None, 56));
                 }
@@ -185,7 +190,7 @@ public partial class Board
             if (startSquare.Rank() < 7 && !_squares[startSquare + 6].IsType(piece.ToColor()))
                 LegalMoves.Add(new Move(startSquare, (byte)(startSquare + 6)));
 
-            if (startSquare.Rank() > 1 && !_squares[startSquare - 10].IsType(piece.ToColor()))
+            if (startSquare.Rank() > 0 && !_squares[startSquare - 10].IsType(piece.ToColor()))
                 LegalMoves.Add(new Move(startSquare, (byte)(startSquare - 10)));
         }
 

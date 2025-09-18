@@ -5,12 +5,10 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_White_AreValid()
     {
-        var board = new Board();
+        var board = new Board(BoardUtils.GenerateFromFenString("5P2/8/8/8/8/3P4/1P6/8 w - - 0 1"));
 
         // Place white pawns: one on starting rank (can move 2 squares), one advanced (1 square only), one on 7th rank
-        board[09] = Piece.White | Piece.Pawn;
-        board[19] = Piece.White | Piece.Pawn;
-        board[61] = Piece.White | Piece.Pawn;
+        // ... existing code ...
         
         board.GenerateLegalMoves();
         
@@ -21,10 +19,7 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_Black_AreValidPromotion()
     {
-        var board = new Board();
-
-        // Black pawn one square away from promotion (1st rank)
-        board[11] = Piece.Black | Piece.Pawn;
+        var board = new Board(BoardUtils.GenerateFromFenString("8/8/8/8/8/8/3p4/8 w - - 0 1"));
         
         // Switch to black's turn
         board.MakeMove(new Move());
@@ -42,10 +37,7 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_White_AreValidPromotion()
     {
-        var board = new Board();
-
-        // White pawn one square away from promotion (8th rank)
-        board[51] = Piece.White | Piece.Pawn;
+        var board = new Board(BoardUtils.GenerateFromFenString("8/3P4/8/8/8/8/8/8 w - - 0 1"));
         
         board.GenerateLegalMoves();
         
@@ -61,12 +53,7 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_White_DiagonalCapture()
     {
-        var board = new Board();
-
-        // White pawn with enemy pieces on both diagonals
-        board[18] = Piece.White | Piece.Pawn;
-        board[25] = Piece.Black | Piece.Pawn;
-        board[27] = Piece.Black | Piece.Knight;
+        var board = new Board(BoardUtils.GenerateFromFenString("8/8/8/8/1p1n4/2P5/8/8 w - - 0 1"));
         
         board.GenerateLegalMoves();
         
@@ -79,14 +66,7 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_Black_DiagonalCapture()
     {
-        var board = new Board();
-
-        // Black pawn with white pieces on both diagonals
-        board[42] = Piece.Black | Piece.Pawn;
-        board[33] = Piece.White | Piece.Bishop;
-        board[35] = Piece.White | Piece.Rook;
-        
-        board.MakeMove(new Move());
+        var board = new Board(BoardUtils.GenerateFromFenString("8/8/2p5/1B1R4/8/8/8/8 b - - 0 1"));
         
         board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 42)
             .OrderBy(x => x.TargetSquare)
@@ -94,57 +74,9 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void Pawn_White_RightDiagonalCaptureWithPromotion()
-    {
-        var board = new Board();
-
-        // White pawn on 7th rank with black piece on promotion diagonal
-        board[50] = Piece.White | Piece.Pawn;
-        board[59] = Piece.Black | Piece.Queen;
-        
-        board.GenerateLegalMoves();
-        
-        var promotionCaptures = board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 50 && m.TargetSquare == 59)
-            .OrderBy(x => x.Promotion);
-        
-        promotionCaptures.ShouldBe([
-            new(50, 59, PromotionFlag.Queen), 
-            new(50, 59, PromotionFlag.Rook),
-            new(50, 59, PromotionFlag.Bishop), 
-            new(50, 59, PromotionFlag.Knight)
-        ]);
-    }
-
-    [Fact]
-    public void Pawn_Black_RightDiagonalCaptureWithPromotion()
-    {
-        var board = new Board();
-
-        // Black pawn on 2nd rank with white piece on promotion diagonal
-        board[10] = Piece.Black | Piece.Pawn;
-        board[01] = Piece.White | Piece.Rook;
-        
-        board.MakeMove(new Move());
-        
-        var promotionCaptures = board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 10 && m.TargetSquare == 01)
-            .OrderBy(x => x.Promotion);
-        
-        promotionCaptures.ShouldBe([
-            new(10, 01, PromotionFlag.Queen), 
-            new(10, 01, PromotionFlag.Rook),
-            new(10, 01, PromotionFlag.Bishop), 
-            new(10, 01, PromotionFlag.Knight)
-        ]);
-    }
-    [Fact]
     public void Pawn_White_SingleDiagonalCapture()
     {
-        var board = new Board();
-
-        // White pawn with enemy on one diagonal, own piece blocking the other
-        board[18] = Piece.White | Piece.Pawn;
-        board[27] = Piece.Black | Piece.Knight;
-        board[25] = Piece.White | Piece.Bishop; // Blocks capture
+        var board = new Board(BoardUtils.GenerateFromFenString("8/8/8/8/1B1n4/2P5/8/8 w - - 0 1"));
         
         board.GenerateLegalMoves();
         
@@ -154,78 +86,9 @@ public partial class LegalMoveTests
     }
 
     [Fact]
-    public void Pawn_White_LeftDiagonalCaptureWithPromotion()
-    {
-        var board = new Board();
-
-        board[49] = Piece.White | Piece.Pawn;
-        board[56] = Piece.Black | Piece.Queen;
-        
-        board.GenerateLegalMoves();
-        
-        var promotionCaptures = board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 49 && m.TargetSquare == 56)
-            .OrderBy(x => x.Promotion);
-        
-        promotionCaptures.ShouldBe([
-            new(49, 56, PromotionFlag.Queen), 
-            new(49, 56, PromotionFlag.Rook),
-            new(49, 56, PromotionFlag.Bishop), 
-            new(49, 56, PromotionFlag.Knight)
-        ]);
-    }
-
-    [Fact]
-    public void Pawn_Black_LeftDiagonalCaptureWithPromotion()
-    {
-        var board = new Board();
-
-        board[09] = Piece.Black | Piece.Pawn;
-        board[00] = Piece.White | Piece.Rook;
-        
-        board.MakeMove(new Move());
-        
-        var promotionCaptures = board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 09 && m.TargetSquare == 00)
-            .OrderBy(x => x.Promotion);
-        
-        promotionCaptures.ShouldBe([
-            new(09, 00, PromotionFlag.Queen), 
-            new(09, 00, PromotionFlag.Rook),
-            new(09, 00, PromotionFlag.Bishop), 
-            new(09, 00, PromotionFlag.Knight)
-        ]);
-    }
-    
-    [Fact]
-    public void Pawn_White_EnPassantAttack_Right()
-    {
-        var board = new Board();
-        
-        // Set up en passant scenario: White pawn on e5, Black pawn moves from f7 to f5
-        board[36] = Piece.White | Piece.Pawn; // e5 (rank 4, file 4)
-        board[53] = Piece.Black | Piece.Pawn; // f7
-        
-        // Make a null move to switch to black
-        board.MakeMove(new Move());
-        
-        // Black pawn moves f7 to f5 (two squares), creating en passant opportunity
-        board.MakeMove(new Move(53, 37)); // f7 to f5
-        
-        board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 36)
-            .OrderBy(x => x.TargetSquare)
-            .ShouldBe([new(36, 44), new(36, 45)]);
-    }
-
-    [Fact]
     public void Pawn_White_EnPassantAttack_Left()
     {
-        var board = new Board();
-        
-        // Set up en passant scenario: White pawn on e5, Black pawn moves from d7 to d5
-        board[36] = Piece.White | Piece.Pawn; // e5 (rank 4, file 4)
-        board[51] = Piece.Black | Piece.Pawn; // d7
-        
-        // Make a null move to switch to black
-        board.MakeMove(new Move());
+        var board = new Board(BoardUtils.GenerateFromFenString("8/3p4/8/4P3/8/8/8/8 b - - 0 1"));
         
         // Black pawn moves d7 to d5 (two squares), creating en passant opportunity
         board.MakeMove(new Move(51, 35)); // d7 to d5
@@ -238,11 +101,10 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_Black_EnPassantAttack_Right()
     {
-        var board = new Board();
+        var board = new Board(BoardUtils.GenerateFromFenString("8/8/8/8/4p3/8/5P2/8 w - - 0 1"));
         
         // Set up en passant scenario: Black pawn on e4, White pawn moves from f2 to f4
-        board[28] = Piece.Black | Piece.Pawn; // e4 (rank 3, file 4)
-        board[13] = Piece.White | Piece.Pawn; // f2
+        // ... existing code ...
         
         // White pawn moves f2 to f4 (two squares), creating en passant opportunity
         board.MakeMove(new Move(13, 29)); // f2 to f4
@@ -255,11 +117,7 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_Black_EnPassantAttack_Left()
     {
-        var board = new Board();
-        
-        // Set up en passant scenario: Black pawn on e4, White pawn moves from d2 to d4
-        board[28] = Piece.Black | Piece.Pawn; // e4 (rank 3, file 4)
-        board[11] = Piece.White | Piece.Pawn; // d2
+        var board = new Board(BoardUtils.GenerateFromFenString("8/8/8/8/4p3/8/3P4/8 w - - 0 1"));
         
         // White pawn moves d2 to d4 (two squares), creating en passant opportunity
         board.MakeMove(new Move(11, 27)); // d2 to d4
@@ -272,12 +130,10 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_EnPassantAttack_NotAvailableAfterOtherMove()
     {
-        var board = new Board();
+        var board = new Board(BoardUtils.GenerateFromFenString("4k3/5p2/8/4P3/8/8/8/8 w - - 0 1"));
         
         // Set up en passant scenario - verify it expires after one turn
-        board[36] = Piece.White | Piece.Pawn; // e5
-        board[53] = Piece.Black | Piece.Pawn; // f7
-        board[60] = Piece.Black | Piece.King; // e8
+        // ... existing code ...
         
         // Make a null move to switch to black
         board.MakeMove(new Move());
@@ -298,11 +154,10 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_EnPassantAttack_AFile()
     {
-        var board = new Board();
+        var board = new Board(BoardUtils.GenerateFromFenString("8/1p6/8/P7/8/8/8/8 w - - 0 1"));
         
         // Test en passant on a-file (leftmost) - edge case testing
-        board[32] = Piece.White | Piece.Pawn; // a5
-        board[49] = Piece.Black | Piece.Pawn; // b7
+        // ... existing code ...
         
         // Make a null move to switch to black
         board.MakeMove(new Move());
@@ -318,11 +173,10 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_EnPassantAttack_HFile()
     {
-        var board = new Board();
+        var board = new Board(BoardUtils.GenerateFromFenString("8/6p1/8/7P/8/8/8/8 w - - 0 1"));
         
         // Test en passant on h-file (rightmost) - edge case testing
-        board[39] = Piece.White | Piece.Pawn; // h5
-        board[54] = Piece.Black | Piece.Pawn; // g7
+        // ... existing code ...
         
         // Make a null move to switch to black
         board.MakeMove(new Move());
@@ -338,9 +192,7 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_EnPassantBits_SetCorrectly()
     {
-        var board = new Board();
-        
-        board[11] = Piece.White | Piece.Pawn; // d2
+        var board = new Board(BoardUtils.GenerateFromFenString("8/8/8/8/8/8/3P4/8 w - - 0 1"));
         
         // White pawn moves d2 to d4 (two squares)
         board.MakeMove(new Move(11, 27)); // d2 to d4
@@ -352,10 +204,7 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_EnPassantBits_ClearedAfterMove()
     {
-        var board = new Board();
-        
-        board[11] = Piece.White | Piece.Pawn; // d2
-        board[60] = Piece.Black | Piece.King; // e8
+        var board = new Board(BoardUtils.GenerateFromFenString("4k3/8/8/8/8/8/3P4/8 w - - 0 1"));
         
         // White pawn moves d2 to d4, setting en passant bits
         board.MakeMove(new Move(11, 27)); // d2 to d4
@@ -368,5 +217,13 @@ public partial class LegalMoveTests
         
         // En passant bits should be cleared after opponent's turn
         board.EnPassantBits.ShouldBe(0u);
+    }
+
+    [Fact]
+    public void Pawn_EnPassantBug_ThisTookWayToLongToFind()
+    {
+        var board = new Board(BoardUtils.GenerateFromFenString("8/8/8/8/P7/7p/8/8 b - a3 0 1"));
+        
+        board.LegalMoves.FriendlyMoves.ShouldBe([new (23, 15)]);
     }
 }

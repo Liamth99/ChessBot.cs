@@ -1,7 +1,12 @@
-﻿namespace ChessBot.Core.Models;
+﻿using System.Diagnostics;
 
+namespace ChessBot.Core.Models;
+
+[DebuggerDisplay("{DebugString}")]
 public partial class Board
 {
+    private string DebugString => BoardUtils.GenerateFenString(this);
+    
     public readonly LegalMoveCollection LegalMoves;
     
     public Piece ColorToMove { get; private set; }

@@ -5,12 +5,7 @@ public partial class LegalMoveTests
     [Fact]
     public void AttackBits_WhitePawnPushes_SetCorrectly()
     {
-        var board = new Board();
-
-        // One white pawn on starting rank: can move 1 or 2 squares forward
-        board[09] = Piece.White | Piece.Pawn;
-
-        board.GenerateLegalMoves();
+        var board = new Board(BoardUtils.GenerateFromFenString("8/8/8/8/8/8/1P6/8 w - - 0 1"));
 
         var expected = (0b1UL << 17) | (0b1UL << 25);
         board.LegalMoves.WhiteAttackBits.ShouldBe(expected);
@@ -20,13 +15,7 @@ public partial class LegalMoveTests
     [Fact]
     public void BlackPawnPushes_SetCorrectly()
     {
-        var board = new Board();
-
-        // Black pawn on starting rank
-        board[53] = Piece.Black | Piece.Pawn;
-
-        // Switch to black to move
-        board.MakeMove(new Move());
+        var board = new Board(BoardUtils.GenerateFromFenString("8/5p2/8/8/8/8/8/8 b - - 0 1"));
 
         // Expect f7 -> f6 (45) and f5 (37)
         var expected = (0b1UL << 45) | (0b1UL << 37);
@@ -37,17 +26,11 @@ public partial class LegalMoveTests
     [Fact]
     public void MixedPieces_SetCorrectly()
     {
-        var board = new Board();
+        var board = new Board(BoardUtils.GenerateFromFenString("8/8/2n5/8/8/8/1P6/8 w - - 0 1"));
 
         // White: pawn at b2 -> b3 (17), b4 (25)
-        board[09] = Piece.White | Piece.Pawn;
-
         // Black: knight at c6 (square 42) -> standard knight targets
         // Knight (c6) jumps: a5(32), a7(48), b4(25), b8(57), d4(27), d8(59), e5(36), e7(52)
-        board[42] = Piece.Black | Piece.Knight;
-
-        // White to move initially
-        board.GenerateLegalMoves();
 
         var expectedWhite = (0b1UL << 17) | (0b1UL << 25);
         var expectedBlack =
@@ -61,14 +44,7 @@ public partial class LegalMoveTests
     [Fact]
     public void LegalMoveCollection_Clear_ResetsAttackBits()
     {
-        var board = new Board();
-
-        // Seed some positions that will create attack bits
-        board[09] = Piece.White | Piece.Pawn; // b2
-        board[53] = Piece.Black | Piece.Pawn; // f7
-
-        // White to move
-        board.GenerateLegalMoves();
+        var board = new Board(BoardUtils.GenerateFromFenString("8/5p2/8/8/8/8/1P6/8 w - - 0 1"));
 
         // Sanity: bits were set
         board.LegalMoves.WhiteAttackBits.ShouldNotBe(0U);
@@ -85,14 +61,9 @@ public partial class LegalMoveTests
     [Fact]
     public void AttackBits_WhiteEnPassantCapture_Included()
     {
-        var board = new Board();
+        var board = new Board(BoardUtils.GenerateFromFenString("8/3p4/8/4P3/8/8/8/8 b - - 0 1"));
 
         // White pawn on e5, Black pawn from d7 to d5 to enable ep on d6 (square 43 capture target from e5)
-        board[36] = Piece.White | Piece.Pawn; // e5
-        board[51] = Piece.Black | Piece.Pawn; // d7
-
-        // Switch to black, then make the double push d7->d5
-        board.MakeMove(new Move());
         board.MakeMove(new Move(51, 35));
 
         // From e5: normal push to e6 (44) and ep capture to d6 (43)

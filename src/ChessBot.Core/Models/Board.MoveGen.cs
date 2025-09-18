@@ -282,6 +282,9 @@ public partial class Board
                     (EnPassantBits & (0b1UL << leftAttackSquare)) > 0)
                 {
                     byte leftAttackByte = (byte)leftAttackSquare;
+                    
+                    if(startSquare.File() - leftAttackByte.File() is > 1 or < -1)
+                        return;
 
                     // Check for promotion on attack
                     if (leftAttackByte.Rank() is 0 or 7)
@@ -292,9 +295,7 @@ public partial class Board
                         LegalMoves.Add(new Move(startSquare, leftAttackByte, PromotionFlag.Knight));
                     }
                     else
-                    {
                         LegalMoves.Add(new Move(startSquare, leftAttackByte));
-                    }
                 }
             }
         }
@@ -310,8 +311,10 @@ public partial class Board
                     (EnPassantBits & (0b1UL << rightAttackSquare)) > 0)
                 {
                     byte rightAttackByte = (byte)rightAttackSquare;
-
-                    // Check for promotion on attack
+                    
+                    if(startSquare.File() - rightAttackByte.File() is > 1 or < -1)
+                        return;
+                    
                     if (rightAttackByte.Rank() is 0 or 7)
                     {
                         LegalMoves.Add(new Move(startSquare, rightAttackByte, PromotionFlag.Queen));
@@ -320,9 +323,7 @@ public partial class Board
                         LegalMoves.Add(new Move(startSquare, rightAttackByte, PromotionFlag.Knight));
                     }
                     else
-                    {
                         LegalMoves.Add(new Move(startSquare, rightAttackByte));
-                    }
                 }
             }
         }

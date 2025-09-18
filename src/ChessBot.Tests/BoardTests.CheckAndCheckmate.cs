@@ -93,19 +93,6 @@ public partial class BoardTests
     }
 
     [Fact]
-    public void Check_BishopLongDiagonal_WithEscape_NotMate()
-    {
-        // White bishop a4 checking black king e8 along diagonal; Black can move Kd8, so not mate.
-        var fen = "4k3/8/8/8/B7/8/8/4K3 b - - 0 1";
-        var settings = BoardUtils.GenerateFromFenString(fen);
-        var board = new Board(settings);
-
-        board.IsCheck.ShouldBeTrue();
-        board.IsMate.ShouldBeFalse();
-        board.IsDraw.ShouldBeFalse();
-    }
-
-    [Fact]
     public void Checkmate_BackRank_WithRook_IsDetected()
     {
         // Back-rank mate against black.

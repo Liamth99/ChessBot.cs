@@ -5,10 +5,7 @@ public partial class BoardTests
     [Fact]
     public void Stalemate_Classic_KingCorner_BoxedByKingAndQueen()
     {
-        // Black to move, not in check, but has no legal moves.
-        var fen = "7k/8/5KQ1/8/8/8/8/8 b - - 0 1";
-        var settings = BoardUtils.GenerateFromFenString(fen);
-        var board = new Board(settings);
+        var board = new Board(BoardUtils.GenerateFromFenString("7k/8/5KQ1/8/8/8/8/8 b - - 0 1"));
 
         board.IsCheck.ShouldBeFalse();
         board.IsMate.ShouldBeFalse();
@@ -18,10 +15,7 @@ public partial class BoardTests
     [Fact]
     public void Stalemate_KingBlocked_ByKingAndPawn()
     {
-        // Another stalemate motif:
-        var fen = "1k6/1P6/1K6/8/8/8/8/8 b - - 0 1";
-        var settings = BoardUtils.GenerateFromFenString(fen);
-        var board = new Board(settings);
+        var board = new Board(BoardUtils.GenerateFromFenString("1k6/1P6/1K6/8/8/8/8/8 b - - 0 1"));
 
         board.IsCheck.ShouldBeFalse();
         board.IsMate.ShouldBeFalse();
@@ -31,15 +25,8 @@ public partial class BoardTests
     [Fact]
     public void Pinned_Rook_OnFile_CannotMoveSideways()
     {
-        // Setup:
-        // White king e1 (4), white rook e2 (12), black rook e8 (60).
-        // Rook on e2 is pinned along the e-file; sideways moves must be illegal.
-        var board = new Board();
-        board[4] = Piece.White | Piece.King; // e1
-        board[12] = Piece.White | Piece.Rook; // e2
-        board[60] = Piece.Black | Piece.Rook; // e8
-
-        board.GenerateLegalMoves();
+        // White king e1, white rook e2, black rook e8. White to move.
+        var board = new Board(BoardUtils.GenerateFromFenString("4r3/8/8/8/8/8/4R3/4K3 w - - 0 1"));
 
         // Illegal: e2 -> d2 (sideways while pinned)
         var illegalSideways = new Move(12, 11);
@@ -57,15 +44,8 @@ public partial class BoardTests
     [Fact]
     public void Pinned_Knight_OnFile_HasNoLegalMoves()
     {
-        // Setup:
-        // White king e1 (4), white knight e2 (12), black rook e8 (60).
-        // Knight is pinned; any knight move would expose the king.
-        var board = new Board();
-        board[4] = Piece.White | Piece.King; // e1
-        board[12] = Piece.White | Piece.Knight; // e2
-        board[60] = Piece.Black | Piece.Rook; // e8
-
-        board.GenerateLegalMoves();
+        // White king e1, white knight e2, black rook e8. White to move.
+        var board = new Board(BoardUtils.GenerateFromFenString("4r3/8/8/8/8/8/4N3/4K3 w - - 0 1"));
 
         var knightMoves = board.LegalMoves.FriendlyMoves.Where(m => m.StartSquare == 12).ToList();
         knightMoves.Count.ShouldBe(0);
@@ -74,20 +54,10 @@ public partial class BoardTests
     [Fact]
     public void Pinned_Pawn_EnPassant_Capture_IsIllegal_IfItExposesKing()
     {
-        // Classic EP pin motif:
-        // White king e1 (4), black rook e8 (60) along the open e-file.
-        // White pawn e5 (36), black pawn d7 (51) will double-push to d5 (35) enabling EP (d6 = 43).
-        // EP move e5xd6 EP would remove the e5 pawn from the e-file and expose the white king to the rook on e8.
-        // Therefore, the EP capture must be excluded from legal moves.
+        // White king e1, black rook e8, white pawn e5, black pawn d7. Black to move.
+        var board = new Board(BoardUtils.GenerateFromFenString("4r3/3p4/8/4P3/8/8/8/4K3 b - - 0 1"));
 
-        var board = new Board();
-        board[4] = Piece.White | Piece.King; // e1
-        board[60] = Piece.Black | Piece.Rook; // e8
-        board[36] = Piece.White | Piece.Pawn; // e5
-        board[51] = Piece.Black | Piece.Pawn; // d7
-
-        // Switch to black, make the double push d7 -> d5
-        board.MakeMove(new Move());
+        // Black double-push d7 -> d5
         board.MakeMove(new Move(51, 35));
 
         // EP capture from e5 to d6 is (36 -> 43). This should be disallowed due to pin.

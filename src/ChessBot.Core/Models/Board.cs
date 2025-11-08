@@ -203,16 +203,16 @@ public partial class Board
         {
             if (movedPiece.IsType(Piece.White))
             {
-                if((move.StartSquare.ToIntBit() & WhiteKingCastle) > 0)
+                if(move.StartSquare is 07)
                     ValidCastleBits &= ~WhiteKingCastle;
-                else
+                else if(move.StartSquare is 0)
                     ValidCastleBits &= ~WhiteQueenCastle;
             }
             else
             {
-                if((move.StartSquare.ToIntBit() & BlackKingCastle) > 0)
+                if(move.StartSquare is 63)
                     ValidCastleBits &= ~BlackKingCastle;
-                else
+                else if (move.StartSquare is 56)
                     ValidCastleBits &= ~BlackQueenCastle;
             }
         }

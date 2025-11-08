@@ -25,7 +25,7 @@ public partial class LegalMoveTests
         board.LegalMoves.FriendlyMoves.OrderBy(x => x.StartSquare).ThenBy(x => x.TargetSquare)
             .ShouldBe(
                     [
-                        new(11, 03, PromotionFlag.Queen),  new(11, 03, PromotionFlag.Rook),
+                        new(11, 03, PromotionFlag.Queen), new(11, 03, PromotionFlag.Rook), 
                         new(11, 03, PromotionFlag.Bishop), new(11, 03, PromotionFlag.Knight)
                     ]
                 );
@@ -159,9 +159,6 @@ public partial class LegalMoveTests
     public void Pawn_EnPassantAttack_HFile()
     {
         var board = new Board(BoardUtils.GenerateFromFenString("8/6p1/8/7P/8/8/8/8 b - - 0 1"));
-        
-        // Test en passant on h-file (rightmost) - edge case testing
-        // ... existing code ...
         
         // Black pawn moves g7 to g5
         board.MakeMove(new Move(54, 38)); // g7 to g5

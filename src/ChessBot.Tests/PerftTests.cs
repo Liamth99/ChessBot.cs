@@ -2,7 +2,7 @@
 using System.Numerics;
 using Xunit.Abstractions;
 
-namespace ChessBot.Tests.PerftTests;
+namespace ChessBot.Tests;
 
 public class PerftTests
 {

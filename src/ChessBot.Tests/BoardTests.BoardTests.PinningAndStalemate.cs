@@ -80,14 +80,9 @@ public partial class BoardTests
         // EP move e5xd6 EP would remove the e5 pawn from the e-file and expose the white king to the rook on e8.
         // Therefore, the EP capture must be excluded from legal moves.
 
-        var board = new Board();
-        board[4] = Piece.White | Piece.King; // e1
-        board[60] = Piece.Black | Piece.Rook; // e8
-        board[36] = Piece.White | Piece.Pawn; // e5
-        board[51] = Piece.Black | Piece.Pawn; // d7
+        var board = new Board(BoardUtils.GenerateFromFenString("4r3/3p4/8/4P3/8/8/8/4K3 b - - 0 1"));
 
-        // Switch to black, make the double push d7 -> d5
-        board.MakeMove(new Move());
+        // make the double push d7 -> d5
         board.MakeMove(new Move(51, 35));
 
         // EP capture from e5 to d6 is (36 -> 43). This should be disallowed due to pin.

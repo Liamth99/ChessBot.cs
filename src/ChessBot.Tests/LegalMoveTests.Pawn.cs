@@ -19,16 +19,13 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_Black_AreValidPromotion()
     {
-        var board = new Board(BoardUtils.GenerateFromFenString("8/8/8/8/8/8/3p4/8 w - - 0 1"));
-        
-        // Switch to black's turn
-        board.MakeMove(new Move());
+        var board = new Board(BoardUtils.GenerateFromFenString("8/8/8/8/8/8/3p4/8 b - - 0 1"));
         
         // Should generate all 4 promotion options
         board.LegalMoves.FriendlyMoves.OrderBy(x => x.StartSquare).ThenBy(x => x.TargetSquare)
             .ShouldBe(
                     [
-                        new(11, 03, PromotionFlag.Queen), new(11, 03, PromotionFlag.Rook), 
+                        new(11, 03, PromotionFlag.Queen),  new(11, 03, PromotionFlag.Rook),
                         new(11, 03, PromotionFlag.Bishop), new(11, 03, PromotionFlag.Knight)
                     ]
                 );
@@ -130,13 +127,7 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_EnPassantAttack_NotAvailableAfterOtherMove()
     {
-        var board = new Board(BoardUtils.GenerateFromFenString("4k3/5p2/8/4P3/8/8/8/8 w - - 0 1"));
-        
-        // Set up en passant scenario - verify it expires after one turn
-        // ... existing code ...
-        
-        // Make a null move to switch to black
-        board.MakeMove(new Move());
+        var board = new Board(BoardUtils.GenerateFromFenString("4k3/5p2/8/4P3/8/8/8/8 b - - 0 1"));
         
         // Black pawn moves f7 to f5, creating en passant opportunity
         board.MakeMove(new Move(53, 37)); // f7 to f5
@@ -154,13 +145,7 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_EnPassantAttack_AFile()
     {
-        var board = new Board(BoardUtils.GenerateFromFenString("8/1p6/8/P7/8/8/8/8 w - - 0 1"));
-        
-        // Test en passant on a-file (leftmost) - edge case testing
-        // ... existing code ...
-        
-        // Make a null move to switch to black
-        board.MakeMove(new Move());
+        var board = new Board(BoardUtils.GenerateFromFenString("8/1p6/8/P7/8/8/8/8 b - - 0 1"));
         
         // Black pawn moves b7 to b5
         board.MakeMove(new Move(49, 33)); // b7 to b5
@@ -173,13 +158,10 @@ public partial class LegalMoveTests
     [Fact]
     public void Pawn_EnPassantAttack_HFile()
     {
-        var board = new Board(BoardUtils.GenerateFromFenString("8/6p1/8/7P/8/8/8/8 w - - 0 1"));
+        var board = new Board(BoardUtils.GenerateFromFenString("8/6p1/8/7P/8/8/8/8 b - - 0 1"));
         
         // Test en passant on h-file (rightmost) - edge case testing
         // ... existing code ...
-        
-        // Make a null move to switch to black
-        board.MakeMove(new Move());
         
         // Black pawn moves g7 to g5
         board.MakeMove(new Move(54, 38)); // g7 to g5

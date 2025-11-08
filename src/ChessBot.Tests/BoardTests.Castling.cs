@@ -10,8 +10,8 @@ public partial class BoardTests
         var board = new Board(BoardUtils.GenerateFromFenString(fen));
 
         // Move white king e1 -> e2
-        var from = BoardUtils.GetIndexByPosition("e1");
-        var to = BoardUtils.GetIndexByPosition("e2");
+        var from = "e1".GetIndexByPosition();
+        var to   = "e2".GetIndexByPosition();
         board.MakeMove(new Move((byte)from, (byte)to));
 
         // Both white castling sides should be cleared
@@ -31,8 +31,8 @@ public partial class BoardTests
         var board = new Board(BoardUtils.GenerateFromFenString(fen));
 
         // Move rook h1 -> h2
-        var from = BoardUtils.GetIndexByPosition("h1");
-        var to = BoardUtils.GetIndexByPosition("h2");
+        var from = "h1".GetIndexByPosition();
+        var to   = "h2".GetIndexByPosition();
         board.MakeMove(new Move(from, to));
 
         board.ValidCastleBits.ShouldBe(Board.AllCastleBits & ~Board.WhiteKingCastle);
@@ -46,8 +46,8 @@ public partial class BoardTests
         var board = new Board(BoardUtils.GenerateFromFenString(fen));
 
         // Move rook a1 -> a2
-        var from = BoardUtils.GetIndexByPosition("a1");
-        var to = BoardUtils.GetIndexByPosition("a2");
+        var from = "a1".GetIndexByPosition();
+        var to   = "a2".GetIndexByPosition();
         board.MakeMove(new Move(from, to));
 
         board.ValidCastleBits.ShouldBe(Board.AllCastleBits & ~Board.WhiteQueenCastle);
@@ -61,8 +61,8 @@ public partial class BoardTests
         var board = new Board(BoardUtils.GenerateFromFenString(fen));
 
         // Move black king e8 -> e7
-        var from = BoardUtils.GetIndexByPosition("e8");
-        var to = BoardUtils.GetIndexByPosition("e7");
+        var from = "e8".GetIndexByPosition();
+        var to   = "e7".GetIndexByPosition();
         board.MakeMove(new Move(from, to));
 
 
@@ -77,8 +77,8 @@ public partial class BoardTests
         var board = new Board(BoardUtils.GenerateFromFenString(fen));
 
         // Move black rook h8 -> h7
-        var from = BoardUtils.GetIndexByPosition("h8");
-        var to = BoardUtils.GetIndexByPosition("h7");
+        var from = "h8".GetIndexByPosition();
+        var to   = "h7".GetIndexByPosition();
         board.MakeMove(new Move(from, to));
 
 
@@ -93,8 +93,8 @@ public partial class BoardTests
         var board = new Board(BoardUtils.GenerateFromFenString(fen));
 
         // Move black rook a8 -> a7
-        var from = BoardUtils.GetIndexByPosition("a8");
-        var to = BoardUtils.GetIndexByPosition("a7");
+        var from = "a8".GetIndexByPosition();
+        var to   = "a7".GetIndexByPosition();
         board.MakeMove(new Move(from, to));
 
 

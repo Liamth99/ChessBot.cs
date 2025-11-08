@@ -8,6 +8,8 @@ public partial class Board
     private string DebugString => BoardUtils.GenerateFenString(this);
     
     public readonly LegalMoveCollection LegalMoves;
+
+    private readonly Queue<string> _positionHistory = new Queue<string>();
     
     public Piece ColorToMove { get; private set; }
     public ulong EnPassantBits { get; private set; }
@@ -69,7 +71,7 @@ public partial class Board
     public Board Clone()
     {
         Piece[] newBoardPieces = new Piece[64];
-        
+
         _squares.CopyTo(newBoardPieces, 0);
         
         return new Board(
@@ -116,7 +118,10 @@ public partial class Board
         bool isCapture = pieceOnTargetBeforeMove is not Piece.None;
 
         if (isCapture)
+        {
+            _positionHistory.Clear();
             HalfMoveClock = 0;
+        }
         
         // Clear castling rights if a rook is captured on its original corner
         if (isCapture && pieceOnTargetBeforeMove.IsType(Piece.Rook))
@@ -135,6 +140,7 @@ public partial class Board
 
         if (movedPiece.IsType(Piece.Pawn))
         {
+            _positionHistory.Clear();
             HalfMoveClock = 0;
             
             if (move.TargetSquare.Rank() is 0 or 7)

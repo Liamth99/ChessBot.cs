@@ -6,11 +6,6 @@ public partial class LegalMoveTests
     public void Pawn_White_AreValid()
     {
         var board = new Board(BoardUtils.GenerateFromFenString("5P2/8/8/8/8/3P4/1P6/8 w - - 0 1"));
-
-        // Place white pawns: one on starting rank (can move 2 squares), one advanced (1 square only), one on 7th rank
-        // ... existing code ...
-        
-        board.GenerateLegalMoves();
         
         board.LegalMoves.FriendlyMoves.OrderBy(x => x.StartSquare).ThenBy(x => x.TargetSquare)
             .ShouldBe([new(09, 17), new(09, 25), new(19, 27)]);

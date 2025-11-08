@@ -20,9 +20,9 @@ public class HumanPlayer : IPlayer
 
             var positions = input.Split('\u0020');
 
-            var startIndex = BoardUtils.GetIndexByPosition(positions[0]);
-            var endIndex   = BoardUtils.GetIndexByPosition(positions[1]);
-            PromotionFlag promFlag = PromotionFlag.None;
+            var           startIndex = positions[0].GetIndexByPosition();
+            var           endIndex   = positions[1].GetIndexByPosition();
+            PromotionFlag promFlag   = PromotionFlag.None;
 
             if (positions.Length is 3)
                 promFlag = Enum.Parse<PromotionFlag>(positions[2]);

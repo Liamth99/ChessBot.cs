@@ -19,7 +19,7 @@ public partial class BoardTests
     [InlineData("c1", 2)]
     public void GetIndexByPosition_ReturnsIndex(string position, byte index)
     {
-        BoardUtils.GetIndexByPosition(position).ShouldBe(index);
+        position.GetIndexByPosition().ShouldBe(index);
     }
     
     [Theory]
@@ -38,7 +38,7 @@ public partial class BoardTests
     [InlineData(2,  "c1")]
     public void GetPositionByIndex_ReturnsPosition(byte index, string position)
     {
-        BoardUtils.GetPositionByIndex(index).ShouldBe(position);
+        index.GetPositionByIndex().ShouldBe(position);
     }
 
     [Fact]
@@ -85,9 +85,7 @@ public partial class BoardTests
     [Fact]
     public void Fen_WithEnPassant_TargetSquareSet()
     {
-        // 8/8/8/8/3pP3/8/8/8 b - e3 0 20
-        var fen = "8/8/8/8/3pP3/8/8/8 b - e3 0 20";
-        var state = BoardUtils.GenerateFromFenString(fen);
+        var state = BoardUtils.GenerateFromFenString("8/8/8/8/3pP3/8/8/8 b - e3 0 20");
 
         // Pieces
         state.Squares[27].ShouldBe(Piece.Black | Piece.Pawn);  // d4
@@ -97,7 +95,7 @@ public partial class BoardTests
         state.ColorToMove.ShouldBe(Piece.Black);
 
         // En passant target
-        var epIndex = BoardUtils.GetIndexByPosition("e3");
+        var epIndex = "e3".GetIndexByPosition();
         state.EnPassantBits.ShouldBe(1uL << epIndex);
 
         // Clocks
@@ -106,12 +104,12 @@ public partial class BoardTests
     }
     
     [Theory]
-    [InlineData("K",       Board.WhiteKingCastle)]
-    [InlineData("Q",       Board.WhiteQueenCastle)]
-    [InlineData("k",       Board.BlackKingCastle)]
-    [InlineData("q",       Board.BlackQueenCastle)]
-    [InlineData("KQkq",    Board.AllCastleBits)]
-    [InlineData("-",       0L)]
+    [InlineData("K",    Board.WhiteKingCastle)]
+    [InlineData("Q",    Board.WhiteQueenCastle)]
+    [InlineData("k",    Board.BlackKingCastle)]
+    [InlineData("q",    Board.BlackQueenCastle)]
+    [InlineData("KQkq", Board.AllCastleBits)]
+    [InlineData("-",    0L)]
     public void Fen_CastlingRights_SetCastleBits(string castling, ulong expectedBits)
     {
         var fen = $"8/8/8/8/8/8/8/8 w {castling} - 0 1";

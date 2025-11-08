@@ -140,6 +140,19 @@ public partial class Board
 
         if(!IsDraw)
             IsDraw = HasInsufficientMaterial();
+
+        if (!IsDraw)
+        {
+            // TODO: this is gross i know. Ill fix it later with actual hashing.
+            string fen          = BoardUtils.GenerateFenString(this);
+            var    fenParts     = fen.Split();
+            string positionHash = string.Join(" ", fenParts[0], fenParts[1], fenParts[2], fenParts[3]);
+
+            _positionHistory.Enqueue(positionHash);
+
+            if(_positionHistory.Count(x => x == positionHash) >= 3)
+                IsDraw = true;
+        }
     }
 
     private void AddSlidingLegalMoves(byte startSquare, Piece piece)

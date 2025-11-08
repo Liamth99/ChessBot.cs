@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace ChessBot.Core;
 
-public static partial class BoardUtils
+public static class BoardUtils
 {
     public static BoardInitSettings GenerateFromFenString(string fenString = @"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
     {
@@ -64,12 +64,12 @@ public static partial class BoardUtils
 
         return new BoardInitSettings()
         {
-            Squares = squares,
-            ColorToMove = fenParts[1] == "w" ? Piece.White : Piece.Black,
+            Squares         = squares,
+            ColorToMove     = fenParts[1] == "w" ? Piece.White : Piece.Black,
             ValidCastleBits = castleBits,
-            EnPassantBits = fenParts[3] == "-" ? 0UL : 1UL << GetIndexByPosition(fenParts[3]),
-            HalfMoveClock = int.Parse(fenParts[4]),
-            FullMoveCount = int.Parse(fenParts[5])
+            EnPassantBits   = fenParts[3] == "-" ? 0UL : 1UL << fenParts[3].GetIndexByPosition(),
+            HalfMoveClock   = int.Parse(fenParts[4]),
+            FullMoveCount   = int.Parse(fenParts[5])
         };
     }
     
@@ -138,7 +138,7 @@ public static partial class BoardUtils
         else
         {
             int epIndex = BitOperations.TrailingZeroCount(board.EnPassantBits);
-            parts.Add(GetPositionByIndex((byte)epIndex));
+            parts.Add(((byte)epIndex).GetPositionByIndex());
         }
 
         parts.Add(board.HalfMoveClock.ToString());
@@ -163,95 +163,5 @@ public static partial class BoardUtils
         }
     }
 
-    
-    public static byte GetIndexByPosition(string position)
-    {
-        var regex = PositionRegex().Match(position.ToLowerInvariant());
-        
-        if(!regex.Success)
-            throw new ArgumentOutOfRangeException(nameof(position), "Position should match the following regex `^[a-hA-H][1-8]$`");
 
-        byte index = 0;
-
-        switch (regex.Groups["rank"].Value[0])
-        {
-            case '1':
-                break;
-            case '2':
-                index += 8;
-                break;
-            case '3':
-                index += 16;
-                break;
-            case '4':
-                index += 24;
-                break;
-            case '5':
-                index += 32;
-                break;
-            case '6':
-                index += 40;
-                break;
-            case '7':
-                index += 48;
-                break;
-            case '8':
-                index += 56;
-                break;
-            
-            default:
-                throw new ArgumentOutOfRangeException(nameof(index), $"Rank '{regex.Groups["rank"].Value[0]}' is not valid");
-        }
-
-        switch (regex.Groups["file"].Value[0])
-        {
-            case 'a':
-                break;
-            case 'b':
-                index += 1;
-                break;
-            case 'c':
-                index += 2;
-                break;
-            case 'd':
-                index += 3;
-                break;
-            case 'e':
-                index += 4;
-                break;
-            case 'f':
-                index += 5;
-                break;
-            case 'g':
-                index += 6;
-                break;
-            case 'h':
-                index += 7;
-                break;
-            
-            default:
-                throw new ArgumentOutOfRangeException(nameof(index), $"File '{regex.Groups["file"].Value[0]}' is not valid");
-        }
-
-        return index;
-    }
-
-    public static string GetPositionByIndex(byte index)
-    {
-        if (index > 63)
-            throw new ArgumentOutOfRangeException(nameof(index), "Index must be between 0 and 63 inclusive.");
-
-        int rank = index % 8;
-
-        int file = index / 8;
-
-        char rankChar = (char)('a' + rank);
-        
-        char fileChar = (char)('1' + file);
-
-        return $"{rankChar}{fileChar}";
-    }
-
-    [GeneratedRegex("^(?<file>[a-h])(?<rank>[1-8])$", RegexOptions.ExplicitCapture | RegexOptions.Compiled, 500, "en-AU")]
-    private static partial Regex PositionRegex();
 }

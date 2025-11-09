@@ -5,7 +5,7 @@ namespace ChessBot.Core.Models;
 [DebuggerDisplay("{DebugString}")]
 public partial class Board
 {
-    private string DebugString => BoardUtils.GenerateFenString(this);
+    public string DebugString => BoardUtils.GenerateFenString(this);
     
     public readonly LegalMoveCollection LegalMoves;
 
@@ -157,17 +157,20 @@ public partial class Board
                 }
             }
 
-            var dif = move.TargetSquare - move.StartSquare;
-            
-            switch (dif)
+            if ((EnPassantBits & move.TargetSquare.ToIntBit()) > 0)
             {
-                case 9 or -7:
-                    _squares[move.StartSquare + 1] = Piece.None;
-                    break;
-                
-                case 7 or -9:
-                    _squares[move.StartSquare - 1] = Piece.None;
-                    break;
+                var dif = move.TargetSquare - move.StartSquare;
+
+                switch (dif)
+                {
+                    case 9 or -7:
+                        _squares[move.StartSquare + 1] = Piece.None;
+                        break;
+
+                    case 7 or -9:
+                        _squares[move.StartSquare - 1] = Piece.None;
+                        break;
+                }
             }
         }
 

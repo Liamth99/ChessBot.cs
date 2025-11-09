@@ -287,28 +287,37 @@ public partial class Board
         // Left diagonal attack
         if (startSquare.File() > 0)
         {
-            int leftAttackSquare = startSquare + (7 * directionMultiplier);
+            int leftAttackSquare = startSquare + (directionMultiplier < 0 ? -9 : 7);
             if (leftAttackSquare is >= 0 and <= 63)
             {
-                var pieceOnLeftAttack = _squares[leftAttackSquare];
-                if (pieceOnLeftAttack != Piece.None && pieceOnLeftAttack.ToColor() != piece.ToColor() ||
-                    (EnPassantBits & (0b1UL << leftAttackSquare)) > 0)
-                {
-                    byte leftAttackByte = (byte)leftAttackSquare;
-                    
-                    if(startSquare.File() - leftAttackByte.File() is > 1 or < -1)
-                        return;
+                byte leftAttackByte = (byte)leftAttackSquare;
 
-                    // Check for promotion on attack
-                    if (leftAttackByte.Rank() is 0 or 7)
+                if(startSquare.File() - leftAttackByte.File() is > 1 or < -1)
+                    return;
+
+                var pieceOnLeftAttack = _squares[leftAttackSquare];
+
+                if (pieceOnLeftAttack is not Piece.None || (EnPassantBits & (0b1UL << leftAttackSquare)) > 0)
+                {
+                    if(pieceOnLeftAttack.ToColor() != piece.ToColor())
                     {
-                        LegalMoves.Add(new Move(startSquare, leftAttackByte, PromotionFlag.Queen));
-                        LegalMoves.Add(new Move(startSquare, leftAttackByte, PromotionFlag.Rook));
-                        LegalMoves.Add(new Move(startSquare, leftAttackByte, PromotionFlag.Bishop));
-                        LegalMoves.Add(new Move(startSquare, leftAttackByte, PromotionFlag.Knight));
+                        // Check for promotion on attack
+                        if (leftAttackByte.Rank() is 0 or 7)
+                        {
+                            LegalMoves.Add(new Move(startSquare, leftAttackByte, PromotionFlag.Queen));
+                            LegalMoves.Add(new Move(startSquare, leftAttackByte, PromotionFlag.Rook));
+                            LegalMoves.Add(new Move(startSquare, leftAttackByte, PromotionFlag.Bishop));
+                            LegalMoves.Add(new Move(startSquare, leftAttackByte, PromotionFlag.Knight));
+                        }
+                        else
+                        {
+                            LegalMoves.Add(new Move(startSquare, leftAttackByte));
+                        }
                     }
-                    else
-                        LegalMoves.Add(new Move(startSquare, leftAttackByte));
+                }
+                else
+                {
+                    LegalMoves.AddAttackBit(piece.ToColor(), leftAttackByte.ToIntBit());
                 }
             }
         }
@@ -316,27 +325,34 @@ public partial class Board
         // Right diagonal attack
         if (startSquare.File() < 7)
         {
-            int rightAttackSquare = startSquare + (9 * directionMultiplier);
+            int rightAttackSquare = startSquare + ( directionMultiplier < 0 ? -7 : 9 );
             if (rightAttackSquare is >= 0 and <= 63)
             {
+                byte rightAttackByte = (byte)rightAttackSquare;
+
+                if(startSquare.File() - rightAttackByte.File() is > 1 or < -1)
+                    return;
+
                 var pieceOnRightAttack = _squares[rightAttackSquare];
-                if (pieceOnRightAttack != Piece.None && pieceOnRightAttack.ToColor() != piece.ToColor() ||
-                    (EnPassantBits & (0b1UL << rightAttackSquare)) > 0)
+
+                if(pieceOnRightAttack != Piece.None || (EnPassantBits & (0b1UL << rightAttackSquare)) > 0)
                 {
-                    byte rightAttackByte = (byte)rightAttackSquare;
-                    
-                    if(startSquare.File() - rightAttackByte.File() is > 1 or < -1)
-                        return;
-                    
-                    if (rightAttackByte.Rank() is 0 or 7)
+                    if (pieceOnRightAttack.ToColor() != piece.ToColor())
                     {
-                        LegalMoves.Add(new Move(startSquare, rightAttackByte, PromotionFlag.Queen));
-                        LegalMoves.Add(new Move(startSquare, rightAttackByte, PromotionFlag.Rook));
-                        LegalMoves.Add(new Move(startSquare, rightAttackByte, PromotionFlag.Bishop));
-                        LegalMoves.Add(new Move(startSquare, rightAttackByte, PromotionFlag.Knight));
+                        if (rightAttackByte.Rank() is 0 or 7)
+                        {
+                            LegalMoves.Add(new Move(startSquare, rightAttackByte, PromotionFlag.Queen));
+                            LegalMoves.Add(new Move(startSquare, rightAttackByte, PromotionFlag.Rook));
+                            LegalMoves.Add(new Move(startSquare, rightAttackByte, PromotionFlag.Bishop));
+                            LegalMoves.Add(new Move(startSquare, rightAttackByte, PromotionFlag.Knight));
+                        }
+                        else
+                            LegalMoves.Add(new Move(startSquare, rightAttackByte));
                     }
-                    else
-                        LegalMoves.Add(new Move(startSquare, rightAttackByte));
+                }
+                else
+                {
+                    LegalMoves.AddAttackBit(piece.ToColor(), rightAttackByte.ToIntBit());
                 }
             }
         }

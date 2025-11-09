@@ -19,7 +19,7 @@ And then maybe in the future ill make one in a functional language or use a Neur
 
 # The plan
 ## Phase One: Get Something That Works
- - [ ] Get Basic Chess Engine Working With All The Rules Working
+ - [x] Get Basic Chess Engine Working With All The Rules Working
    - [x] Calculate Basic Legal Moves For All Pieces
    - [x] Pawn Shenanigans
      - [x] Pawn Promotion
@@ -28,13 +28,13 @@ And then maybe in the future ill make one in a functional language or use a Neur
    - [x] Castling
    - [x] Check And Checkmate
    - [x] Illegal Moves
-   - [ ] Game Draws
+   - [x] Game Draws
      - [x] Stalemate
-     - [ ] Threefold Repetition
+     - [x] Threefold Repetition
      - [x] Fifty-Move Rule
      - [x] Insufficient Material
  - [x] Abstract Input System (Player Input And Random Move Input As a Start) 
- - [ ] Setup large validation tests to make sure the core engine is definitely bug free.
+ - [x] Setup perft tests.
  - [ ] Basic MiniMax Evaluation Player Input
 
 ## Phase Two: Make It Not Suck

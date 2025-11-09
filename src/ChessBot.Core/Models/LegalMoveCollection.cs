@@ -34,6 +34,14 @@ public class LegalMoveCollection
             BlackAttackBits |= move.TargetSquare.ToIntBit();
     }
 
+    public void AddAttackBit(Piece color, ulong bit)
+    {
+        if (color is Piece.White)
+            WhiteAttackBits |= bit;
+        else
+            BlackAttackBits |= bit;
+    }
+
     public void AddRange(IEnumerable<Move> moves)
     {
         foreach (var move in moves)

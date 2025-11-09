@@ -11,7 +11,7 @@ namespace ChessBot.Core.Models;
 [DebuggerDisplay("{DisplayString}")]
 public readonly struct Move : IEquatable<Move>
 {
-    private string DisplayString => $"({_moveData:x8}) s{StartSquare}-t{TargetSquare}-p{Promotion.ToString()}-c{CastlingSquare}";
+    public string DisplayString => $"({_moveData:x8}) {StartSquare.GetPositionByIndex()}-{TargetSquare.GetPositionByIndex()}{(Promotion is PromotionFlag.None ? "" : Promotion.ToString().ToLowerInvariant().First())} {StartSquare}-{TargetSquare}-{Promotion.ToString()}-{CastlingSquare}";
 
     public Move(byte startSquare, byte targetSquare, PromotionFlag promotion = PromotionFlag.None, byte castlingSquare = 0)
     {
@@ -47,7 +47,7 @@ public readonly struct Move : IEquatable<Move>
 
     public bool Equals(Move other)
     {
-        return StartSquare == other.StartSquare && TargetSquare == other.TargetSquare;
+        return _moveData == other._moveData;
     }
 
     public override bool Equals(object? obj)
